@@ -125,27 +125,37 @@ def exc(g: list):
         if cproj is None:
             print(hd.NPY)
             return
-        cproj.setLen(int(g[0]), int(g[1]))
-        saved = False
-        ahf()
+        if len(g) == 1:
+            print(cproj.getLen(int(g[0])))
+            return
+        if cproj.setLen(int(g[0]), int(g[1])):
+            saved = False
+            ahf()
+            return
+        print(hd.POOR)
         return
     if cmd == "ofs":
         if cproj is None:
             print(hd.NPY)
             return
-        cproj.setPROffset(int(g[0]), int(g[1]))
-        saved = False
-        ahf()
+        if cproj.setPROffset(int(g[0]), int(g[1])):
+            saved = False
+            ahf()
+            return
+        print(hd.POOR)
         return
     if cmd == "plo":                            # when in play range first note will be
         if cproj is None:
             print(hd.NPY)
             return
-        cproj.setPOffset(int(g[0]), int(g[1]))
-        saved = False
-        ahf()
+        if cproj.setPOffset(int(g[0]), int(g[1])):
+            saved = False
+            ahf()
+            return
+        print(hd.POOR)
         return
-    if cmd == "ldt":                            # THIS IS DEV ONLY FUNCTION, SHOULDNT BE REALLY USED. MAY BREAK A LOT OF THINGS. LOAD PATTERNS FROM ONE FILE TO SECOND
+    # NOT READY FUNCTIONS, DEV ONLY
+    if cmd == "ldt":                            # LOAD PATTERNS FROM ONE FILE TO SECOND
         if cproj is None:
             print(hd.NPY)
             return
@@ -156,6 +166,13 @@ def exc(g: list):
             ahf()
         except IndexError:
             print("index err")
+        return
+    if cmd == "cpv":                            # COPY ONE PATTERN VALUES TO SECOND
+        if cproj is None:
+            print(hd.NPY)
+            return
+        cproj.patterns[int(g[1])].values = cproj.patterns[int(g[0])].values
+        saved = False
         return
     print("invalid command")
 
