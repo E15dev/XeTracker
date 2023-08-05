@@ -2,13 +2,11 @@
 
 fn = [
 "clean.sh",
-"dev.sh",
 "editor.py",
 "fg.py",
 "hd.py",
 "p2f.py",
 "player.py",
-"test.sh",
 "readme.md"]
 
 tch = 0
