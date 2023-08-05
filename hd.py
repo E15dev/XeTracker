@@ -25,6 +25,7 @@ plo PI VAL      - set which note is first in play range
 
 ENAME = "XeTrEditor:"                                   # base comman input (no project name)
 NPY = "you arent editing any project yet"               # error message when you dont have loaded project
+POOR = "probably pattern id is too big"                 # error when trying to access pattern out of range
 leghrf = False                                          # TODO: ADD CHECK IF PRINT OUTPUT SUPPORT COLORS AND SET IT THEN
 color_reset, color_invert, color_index, color_first, color_current = "", "", "", "", ""
 if not leghrf:
@@ -87,8 +88,13 @@ class TrFile:
         return self.patterns[pi].prlen
 
     def setLen(self, pi: int, l:int):
-        self.patterns[pi].prlen = l
-        self.patterns[pi].poffset = self.patterns[pi].poffset % self.patterns[pi].prlen
+        try:
+            self.patterns[pi].prlen = l
+            self.patterns[pi].poffset = self.patterns[pi].poffset % self.patterns[pi].prlen
+        except IndexError:
+            return False
+        return True
+
 
     def getTempo(self):
         return self.tempo
@@ -107,13 +113,22 @@ class TrFile:
         return cp.read((cp.proffset + ((i+cp.poffset)%cp.prlen)) % MPL)
 
     def setPROffset(self, pi: int, o: int):
-        self.patterns[pi].proffset = o % MPL
+        try:
+            self.patterns[pi].proffset = o % MPL
+        except IndexError:
+            return False
+        return True
+
 
     def getPROffset(self, pi: int):
         return self.patterns[pi].proffset
 
     def setPOffset(self, pi: int, val: int):
-        self.patterns[pi].poffset = val % self.patterns[pi].prlen
+        try:
+            self.patterns[pi].poffset = val % self.patterns[pi].prlen
+        except IndexError:
+            return False
+        return True
 
     def getPOffset(self, pi: int):
         return self.patterns[pi].poffset
@@ -148,4 +163,3 @@ def hrf(pr: TrFile, a=True):
                     g = g + padstr(str(hex(pt.read(i)))[2:], 6)
             g = g + "\n"
     return "\r" + g + color_reset + "\n"
-
