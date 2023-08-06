@@ -193,7 +193,7 @@ def exc(g: list):
         if cproj is None:
             print(hd.NPY)
             return
-        cproj.lock(int(g[0]))
+        cproj.unlock(int(g[0]))
         saved = False
         return
     # NOT READY FUNCTIONS, DEV ONLY
