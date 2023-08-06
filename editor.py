@@ -182,6 +182,21 @@ def exc(g: list):
     except hd.locked:
         print(hd.LK)
         return
+    # pattern things
+    if cmd == "mute":
+        if cproj is None:
+            print(hd.NPY)
+            return
+        cproj.mute(int(g[0]))
+        saved = False
+        return
+    if cmd == "unmute":
+        if cproj is None:
+            print(hd.NPY)
+            return
+        cproj.unmute(int(g[0]))
+        saved = False
+        return
     if cmd == "lock":
         if cproj is None:
             print(hd.NPY)
