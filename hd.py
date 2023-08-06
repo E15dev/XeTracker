@@ -34,7 +34,6 @@ if not leghrf:
     color_index = "\033[36m"                            # color of index
     color_first = color_invert + "\033[46m"             # color of first not in playrange
     color_current = "\033[1m"                           # CURRENT IS NOT USED YET, WILL BE WHEN I WILL MADE BETTER EDITOR SO YOU COULD LIKE USE ARROWS TO SELECT WHICH TO MODIFY AND NOT NEED TO USE (hrf) and (set) EVERY TIME
-    print(color_reset, end="")                          # reset everything on start
 
 # class TrVal:
 #     def __init(self, pitch, volume):
