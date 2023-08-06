@@ -12,6 +12,8 @@ try:
     tempo = cproj.getTempo()
     tn = time()
     i = 0
+    if cproj.patterns[pi].muted:
+        raise KeyboardInterrupt
     while True:
         while time()-tn < i*(60/tempo):
             pass
