@@ -28,6 +28,7 @@ if __name__ == "__main__":
             p = sys.stdin.readline()[:-1]   # cut "\n" from end
             if p == "":
                 raise KeyboardInterrupt     # probably i will need to add printing something on end so sound gen with know that it also needs to stop
-            print(convert(int(p)))
+            sys.stdout.write(str(convert(int(p))) + "\n")
+            sys.stdout.flush()
     except KeyboardInterrupt:
         pass
