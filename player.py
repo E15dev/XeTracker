@@ -15,7 +15,8 @@ try:
     while True:
         while time()-tn < i*(60/tempo):
             pass
-        print(cproj.playerRead(pi, i))
+        sys.stdout.write(str(cproj.playerRead(pi, i)) + "\n")
+        sys.stdout.flush()
         i = i + 1
 except KeyboardInterrupt:
     pass
