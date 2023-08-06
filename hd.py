@@ -22,6 +22,8 @@ ofs PI VAL      - set play range offset of pattern PI to VAL
 plo PI VAL      - set which note is first in play range
 lock            - lock pattern
 unlock          - unlock pattern
+mute            - mute pattern
+unmute          - unmute pattern
 rn              - set root note for player, default is c (3), to set it to a just type `rn 0`
 unload          - unload current project, like closing and opening editor again, but you keep session config like auto or hv
 """
@@ -32,14 +34,15 @@ NPY = "you arent editing any project yet"               # error message when you
 POOR = "probably pattern id is too big"                 # error when trying to access pattern out of range
 LK = "this pattern is locked, use unlock on it first"   # to LOCKED exception
 leghrf = False                                          # TODO: ADD CHECK IF PRINT OUTPUT SUPPORT COLORS AND SET IT THEN
-color_reset, color_invert, color_index, color_first, color_current, color_locked = "", "", "", "", "", ""
+color_reset, color_invert, color_index, color_first, color_current, color_locked, color_muted = "", "", "", "", "", "", ""
 if not leghrf:
     color_reset = "\033[0m"                             # reset everything
     color_invert = "\033[7m"                            # invert bacground and text color
     color_index = "\033[36m"                            # color of index
     color_first = color_invert + "\033[46m"             # color of first not in playrange
     color_current = "\033[1m"                           # CURRENT IS NOT USED YET, WILL BE WHEN I WILL MADE BETTER EDITOR SO YOU COULD LIKE USE ARROWS TO SELECT WHICH TO MODIFY AND NOT NEED TO USE (hrf) and (set) EVERY TIME
-    color_locked = "\033[41m\033[30m"
+    color_locked = "\033[41m"                           # when locked
+    color_muted = "\033[41m\033[30m"                    # when pattern is muted
 
 # ----EXCEPTIONS----
 class locked(Exception):
@@ -54,6 +57,7 @@ class TrPattern:
         self.proffset = ofs     # where play range starts
         self.poffset = pofs     # where in play range, first note is (for player)
         self.locked = False
+        self.muted = False
         for i in range(MPL):
             self.values.append(0)
 
@@ -156,6 +160,11 @@ class TrFile:
     def unlock(self, pi: int):
         self.patterns[pi].locked = False
 
+    def mute(self, pi: int):
+        self.patterns[pi].muted = True
+    def unmute(self, pi: int):
+        self.patterns[pi].muted = False
+
 
 def padstr(s: str, l: int):
     if len(s) > l:
@@ -168,10 +177,14 @@ def hrf(pr: TrFile, a=True):
         if a or pr.isInPRAll(i):
             g = g + color_index + padstr(str(hex(i))[2:], 6) + color_reset + " "
             for pt in pr.patterns:
-                if pt.locked:
-                    g = g + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset)) 
+                if pt.muted:
+                    g = g + color_muted + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
                 elif i == pt.fPVI():
                     g = g + color_first + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
+                elif pt.locked and pt.isInPR(i):
+                    g = g + color_invert + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
+                elif pt.locked:
+                    g = g + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
                 elif pt.isInPR(i):
                     g = g + color_invert + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
                 else:
