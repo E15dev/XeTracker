@@ -32,13 +32,14 @@ NPY = "you arent editing any project yet"               # error message when you
 POOR = "probably pattern id is too big"                 # error when trying to access pattern out of range
 LK = "this pattern is locked, use unlock on it first"   # to LOCKED exception
 leghrf = False                                          # TODO: ADD CHECK IF PRINT OUTPUT SUPPORT COLORS AND SET IT THEN
-color_reset, color_invert, color_index, color_first, color_current = "", "", "", "", ""
+color_reset, color_invert, color_index, color_first, color_current, color_locked = "", "", "", "", "", ""
 if not leghrf:
     color_reset = "\033[0m"                             # reset everything
     color_invert = "\033[7m"                            # invert bacground and text color
     color_index = "\033[36m"                            # color of index
     color_first = color_invert + "\033[46m"             # color of first not in playrange
     color_current = "\033[1m"                           # CURRENT IS NOT USED YET, WILL BE WHEN I WILL MADE BETTER EDITOR SO YOU COULD LIKE USE ARROWS TO SELECT WHICH TO MODIFY AND NOT NEED TO USE (hrf) and (set) EVERY TIME
+    color_locked = "\033[41m\033[30m"
 
 # ----EXCEPTIONS----
 class locked(Exception):
@@ -167,7 +168,9 @@ def hrf(pr: TrFile, a=True):
         if a or pr.isInPRAll(i):
             g = g + color_index + padstr(str(hex(i))[2:], 6) + color_reset + " "
             for pt in pr.patterns:
-                if i == pt.fPVI():
+                if pt.locked:
+                    g = g + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset)) 
+                elif i == pt.fPVI():
                     g = g + color_first + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
                 elif pt.isInPR(i):
                     g = g + color_invert + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
