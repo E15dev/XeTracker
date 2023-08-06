@@ -33,11 +33,14 @@ def exc(g: list):
     global av
     global saved
     cmd = g.pop(0)                              # pop command form list making g args and cmd real command
+    # info
     if cmd == "help":
         print(hd.COMMANDS)
         return
+    # exit
     if cmd == "exit":                           # exit
         raise KeyboardInterrupt                 #   it just jump to except in main which handle exiting correctly
+    # editor settings TODO: make config file that will be loaded on every editor session
     if cmd == "auto":                           # enable/disable auto printing after every command
         ah = not ah
         print("auto hrf is now set to:", ah)
@@ -46,6 +49,7 @@ def exc(g: list):
         av = not av
         print("auto hrf is now using:", av*"hrf"+(not av)*"values") # who would ever use if...
         return
+    # creating new projects
     if cmd == "new":                            # create new file
         sv()
         fileloc = g[0] + ".xetrp"
@@ -62,6 +66,7 @@ def exc(g: list):
        	saved = False
         ahf()
         return
+    # operations on file
     if cmd == "save":                           # save current file
         if cproj is not None:
             cproj.save(fileloc)
@@ -82,6 +87,14 @@ def exc(g: list):
         except FileNotFoundError:
             print("file not found")
         return
+    if cmd == "unload":
+        sv()
+        cproj = None
+        cb = hd.ENAME
+        fileloc = ""
+        saved = True
+        return
+    # print some project data
     if cmd == "hrf":                            # print all values in all patterns in human readable fomat
         if cproj is not None:
             print(hd.hrf(cproj))
@@ -94,23 +107,7 @@ def exc(g: list):
             return
         print(hd.NPY)
         return
-    if cmd == "set":                            # set value
-        if cproj is None:
-            print(hd.NPY)
-            return
-        try:
-            if len(g) < 3:
-                raise IndexError
-            cproj.write(int(g[0]), int(g[1]), int(g[2]))
-            saved = False
-            ahf()
-            return
-        except IndexError:
-            print("usage: set PATTERN INDEX VALUE")
-            return
-        except ValueError:
-            print("usage: set PATTERN INDEX VALUE")
-            return
+    # project config
     if cmd == "tempo":                          # set or get tempo
         if cproj is None:
             print(hd.NPY)
@@ -121,38 +118,83 @@ def exc(g: list):
         except IndexError:
             print(cproj.getTempo())
         return
-    if cmd == "len":                            # set len of pattern play range
+    if cmd == "rn":
         if cproj is None:
             print(hd.NPY)
             return
-        if len(g) == 1:
-            print(cproj.getLen(int(g[0])))
-            return
-        if cproj.setLen(int(g[0]), int(g[1])):
-            saved = False
-            ahf()
-            return
-        print(hd.POOR)
+        try:
+            cproj.rootnote = int(g[0])
+        except IndexError:
+            print(cproj.rootnote)
         return
-    if cmd == "ofs":
-        if cproj is None:
-            print(hd.NPY)
+    # patter commands
+    try:
+        if cmd == "set":                            # set value
+            if cproj is None:
+                print(hd.NPY)
+                return
+            try:
+                if len(g) < 3:
+                    raise IndexError
+                cproj.write(int(g[0]), int(g[1]), int(g[2]))
+                saved = False
+                ahf()
+                return
+            except IndexError:
+                print("usage: set PATTERN INDEX VALUE")
+                return
+            except ValueError:
+                print("usage: set PATTERN INDEX VALUE")
+                return
+        if cmd == "len":                            # set len of pattern play range
+            if cproj is None:
+                print(hd.NPY)
+                return
+            if len(g) == 1:
+                print(cproj.getLen(int(g[0])))
+                return
+            if cproj.setLen(int(g[0]), int(g[1])):
+                saved = False
+                ahf()
+                return
+            print(hd.POOR)
             return
-        if cproj.setPROffset(int(g[0]), int(g[1])):
-            saved = False
-            ahf()
+        if cmd == "ofs":
+            if cproj is None:
+                print(hd.NPY)
+                return
+            if cproj.setPROffset(int(g[0]), int(g[1])):
+                saved = False
+                ahf()
+                return
+            print(hd.POOR)
             return
-        print(hd.POOR)
+        if cmd == "plo":                            # when in play range first note will be
+            if cproj is None:
+                print(hd.NPY)
+                return
+            if cproj.setPOffset(int(g[0]), int(g[1])):
+                saved = False
+                ahf()
+                return
+            print(hd.POOR)
+            return
+    except hd.locked:
+        print(hd.LK)
         return
-    if cmd == "plo":                            # when in play range first note will be
+    if cmd == "lock":
         if cproj is None:
             print(hd.NPY)
             return
-        if cproj.setPOffset(int(g[0]), int(g[1])):
-            saved = False
-            ahf()
+        cproj.lock(int(g[0]))
+        saved = False
+        return
+    if cmd == "unlock":
+        if cproj is None:
+            print(hd.NPY)
             return
-        print(hd.POOR)
+        cproj.lock(int(g[0]))
+        saved = False
         return
     # NOT READY FUNCTIONS, DEV ONLY
     if cmd == "ldt":                            # LOAD PATTERNS FROM ONE FILE TO SECOND
