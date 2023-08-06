@@ -3,7 +3,7 @@ import fg as gen
 import hd
 import pickle
 
-print("\nwelcome to XeTracker!\nuse help for help\n")
+print("\nwelcome to XeTracker!\nuse help for help\n", hd.color_reset)
 
 ah = False
 av = True
