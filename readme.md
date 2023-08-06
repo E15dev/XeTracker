@@ -1,6 +1,9 @@
 # welcome
-this is XeTracker project
-probably only tracker software made to work in tty mode
+this is XeTracker project<br>
+probably only tracker software made to work in tty mode<br>
+
+on start you probably need to run
+`chmod +x editor.py p2f.py player.py clean.sh count.py sg/build.sh` so you can execute these things
 
 # files
 `clean.sh` - remove all stuff generated when running + test.xetrp<br>
