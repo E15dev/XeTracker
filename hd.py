@@ -20,12 +20,17 @@ tempo [TEMPO]   - set project tempo to TEMPO or show current tempo if no args
 len PI VAL      - set play range len of patter PI to VAL
 ofs PI VAL      - set play range offset of pattern PI to VAL
 plo PI VAL      - set which note is first in play range
+lock            - lock pattern
+unlock          - unlock pattern
+rn              - set root note for player, default is c (3), to set it to a just type `rn 0`
+unload          - unload current project, like closing and opening editor again, but you keep session config like auto or hv
 """
 
 
 ENAME = "XeTrEditor:"                                   # base comman input (no project name)
 NPY = "you arent editing any project yet"               # error message when you dont have loaded project
 POOR = "probably pattern id is too big"                 # error when trying to access pattern out of range
+LK = "this pattern is locked, use unlock on it first"   # to LOCKED exception
 leghrf = False                                          # TODO: ADD CHECK IF PRINT OUTPUT SUPPORT COLORS AND SET IT THEN
 color_reset, color_invert, color_index, color_first, color_current = "", "", "", "", ""
 if not leghrf:
@@ -35,16 +40,11 @@ if not leghrf:
     color_first = color_invert + "\033[46m"             # color of first not in playrange
     color_current = "\033[1m"                           # CURRENT IS NOT USED YET, WILL BE WHEN I WILL MADE BETTER EDITOR SO YOU COULD LIKE USE ARROWS TO SELECT WHICH TO MODIFY AND NOT NEED TO USE (hrf) and (set) EVERY TIME
 
-# class TrVal:
-#     def __init(self, pitch, volume):
-#         self.pitch = pitch
-#         self.volume = volume            # x00 to xff pls
-#         self.m0 = 0
-#         self.m1 = 0
-#         self.m2 = 0
-#         self.m3 = 0
-#         # TODO: MAYBE USE THIS LATER, NOW ITS EXPERIMENTAL
-#         # TODO: AUTOMATIONS, LIKE THAT ILL BE INTERPOLATED BY PLAYER, BUT I GUESS STORE IT IN PATTERN NOT IN THIS
+# ----EXCEPTIONS----
+class locked(Exception):
+    """when trying to edit locked pattern"""
+    pass
+
 
 class TrPattern:
     def __init__(self, l=8, ofs=0, pofs=0):
@@ -52,6 +52,7 @@ class TrPattern:
         self.prlen = l          # length of play range
         self.proffset = ofs     # where play range starts
         self.poffset = pofs     # where in play range, first note is (for player)
+        self.locked = False
         for i in range(MPL):
             self.values.append(0)
 
@@ -59,6 +60,8 @@ class TrPattern:
         return self.values[i]
 
     def write(self, i, val):
+        if self.locked:
+            raise locked
         self.values[i] = val
 
     def isInPR(self, i):
@@ -75,6 +78,7 @@ class TrFile:
         self.patterns = []
         self.name = name
         self.tempo = tempo
+        self.rootnote = 0       # its a, set to 3 for c
         for i in range(pcount):
             self.patterns.append(TrPattern())
 
@@ -109,7 +113,7 @@ class TrFile:
 
     def playerRead(self, pi, i):
         cp = self.patterns[pi]
-        return cp.read((cp.proffset + ((i+cp.poffset)%cp.prlen)) % MPL)
+        return self.rootnote + cp.read((cp.proffset + ((i+cp.poffset)%cp.prlen)) % MPL)
 
     def setPROffset(self, pi: int, o: int):
         try:
@@ -141,6 +145,15 @@ class TrFile:
         for pt in self.patterns:
             m = m or pt.isInPR(i)
         return m
+
+    def setRN(self, n: int):
+        self.rootnote = n
+
+    def lock(self, pi: int):
+        self.patterns[pi].locked = True
+
+    def unlock(self, pi: int):
+        self.patterns[pi].locked = False
 
 
 def padstr(s: str, l: int):
