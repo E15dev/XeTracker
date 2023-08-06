@@ -15,16 +15,19 @@ bfqs = [
 783.99,                         # g
 830.61]                         # g#
 
-import sys
+def convert(p: int):
+    oct = p // 12
+    mp = p % 12
+    return bfqs[mp]*(pow(2, oct))
 
-try:
-    while True:
-        v = sys.stdin.readline()[:-1]
-        if v == "":
-            raise KeyboardInterrupt
-       	v = int(v)              # TODO: GET VAL THAT WILL BE PIPED FROM PLAYER
-        oct = v // 12           # get octave
-        mp = v % 12             # get base pitch (always in 0 oct)
-        print(bfqs[mp]*(pow(2, oct)))
-except KeyboardInterrupt:
-    pass
+
+if __name__ == "__main__":
+    import sys
+    try:
+        while True:
+            p = sys.stdin.readline()[:-1]   # cut "\n" from end
+            if p == "":
+                raise KeyboardInterrupt     # probably i will need to add printing something on end so sound gen with know that it also needs to stop
+            print(convert(int(p)))
+    except KeyboardInterrupt:
+        pass
