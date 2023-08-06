@@ -2,7 +2,7 @@
 # this is program to conver pitch from XeTracker to frequency
 
 bfqs = [
-440.0,                          # a
+440.00,                         # a
 466.16,                         # a#
 493.88,                         # b
 523.25,                         # c
