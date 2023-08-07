@@ -230,6 +230,10 @@ try:
                 exc(cm.split(" "))
             except hd.locked:
                 print(hd.LK)
+            except IndexError:
+                print("probably wrong usage of this command")
+            except:
+                print("something went wrong, and it wasnt caught by other exceptions)
 except KeyboardInterrupt:
     print("\n")
     sv()
