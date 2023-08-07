@@ -17,6 +17,7 @@ on start you probably need to run
 `sg/build.sh` - to build soundgen<br>
 `sg/sg.h` - waves generors<br>
 `sg/soundgen.cpp` - sound player<br>
+`sg/rand.py` - generate random freq between 220 and 880 hz to test soundgen<br>
 
 # other
 list commands by doing `help` in editor<br>
