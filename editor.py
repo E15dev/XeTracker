@@ -43,7 +43,7 @@ def exc(g: list):
         # editor settings TODO: make config file that will be loaded on every editor session
         case "auto":                           # enable/disable auto printing after every command
             ah = not ah
-            print("auto hrf is now set to:", ah)
+            print("auto hrf is now:", ah*"enabled"+(not ah)*"disabled")
         case "hv":                             # in ahf, use like values or default hrf
             av = not av
             print("auto hrf is now using:", av*"hrf"+(not av)*"values") # who would ever use if...
