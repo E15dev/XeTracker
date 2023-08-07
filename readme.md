@@ -22,6 +22,7 @@ on start you probably need to run
 list commands by doing `help` in editor<br>
 you can also use `;` in commands (no spaces) and it will be like list of commands, for example `new test;set 1 1 1;hrf;save;exit`<br>
 
-# usage example
+# example
+0. build sound generator with: `cd sg; ./build.sh; cd ..` (you need to be in project root dir for it to work, if you are already in sg just run `./build.sh`)
 1. with editor create example project: `echo -e "new test;tempo 113;set 0 1 12;set 0 3 24;set 0 4 12;set 0 6 7;save;exit" | ./editor.py`
-2. to play you need few things, player, p2f and soundgen: `./player.py test.xetrp 0 | ./p2f.py | sg/soundgen`
+2. play it with: `./player.py test.xetrp 0 | ./p2f.py | sg/soundgen`
