@@ -34,102 +34,90 @@ def exc(g: list):
     global saved
     cmd = g.pop(0)                              # pop command form list making g args and cmd real command
     # info
-    if cmd == "help":
-        print(hd.COMMANDS)
-        return
-    # exit
-    if cmd == "exit":                           # exit
-        raise KeyboardInterrupt                 #   it just jump to except in main which handle exiting correctly
-    # editor settings TODO: make config file that will be loaded on every editor session
-    if cmd == "auto":                           # enable/disable auto printing after every command
-        ah = not ah
-        print("auto hrf is now set to:", ah)
-        return
-    if cmd == "hv":                             # in ahf, use like values or default hrf
-        av = not av
-        print("auto hrf is now using:", av*"hrf"+(not av)*"values") # who would ever use if...
-        return
-    # creating new projects
-    if cmd == "new":                            # create new file
-        sv()
-        fileloc = g[0] + ".xetrp"
-        cproj = gen.empty(4, g[0])
-        cb = hd.ENAME + cproj.name
-       	saved = False
-        ahf()
-        return
-    if cmd == "random":
-        sv()
-        fileloc = g[0] + ".xetrp"
-        cproj = gen.random(4, g[0])
-        cb = hd.ENAME + cproj.name
-       	saved = False
-        ahf()
-        return
-    # operations on file
-    if cmd == "save":                           # save current file
-        if cproj is not None:
-            cproj.save(fileloc)
-       	    saved = True
-            return
-        print(hd.NPY)
-        return
-    if cmd == "load":                           # load file from disk
-        sv()
-        try:
-            fileloc = g[0]
-            f = open(fileloc, "rb")
-            cproj = pickle.load(f)
-            f.close()
+    match cmd:
+        case "help":
+            print(hd.COMMANDS)
+        # exit
+        case "exit":                           # exit
+            raise KeyboardInterrupt            #   it just jump to except in main which handle exiting correctly
+        # editor settings TODO: make config file that will be loaded on every editor session
+        case "auto":                           # enable/disable auto printing after every command
+            ah = not ah
+            print("auto hrf is now set to:", ah)
+        case "hv":                             # in ahf, use like values or default hrf
+            av = not av
+            print("auto hrf is now using:", av*"hrf"+(not av)*"values") # who would ever use if...
+        # creating new projects
+        case "new":                            # create new file
+            sv()
+            fileloc = g[0] + ".xetrp"
+            cproj = gen.empty(4, g[0])
             cb = hd.ENAME + cproj.name
-            saved = True
+       	    saved = False
             ahf()
-        except FileNotFoundError:
-            print("file not found")
-        return
-    if cmd == "unload":
-        sv()
-        cproj = None
-        cb = hd.ENAME
-        fileloc = ""
-        saved = True
-        return
-    # print some project data
-    if cmd == "hrf":                            # print all values in all patterns in human readable fomat
-        if cproj is not None:
-            print(hd.hrf(cproj))
-            return
-        print(hd.NPY)
-        return
-    if cmd == "values":                         # like hrf but stop printing after last play range end
-        if cproj is not None:
-            print(hd.hrf(cproj, a=False))
-            return
-        print(hd.NPY)
-        return
-    # project config
-    if cmd == "tempo":                          # set or get tempo
-        if cproj is None:
+        case "random":
+            sv()
+            fileloc = g[0] + ".xetrp"
+            cproj = gen.random(4, g[0])
+            cb = hd.ENAME + cproj.name
+       	    saved = False
+            ahf()
+        # operations on file
+        case "save":                           # save current file
+            if cproj is not None:
+                cproj.save(fileloc)
+       	        saved = True
+                return
             print(hd.NPY)
-            return
-        try:
-            cproj.setTempo(int(g[0]))
-            saved = False
-        except IndexError:
-            print(cproj.getTempo())
-        return
-    if cmd == "rn":
-        if cproj is None:
+        case "load":                           # load file from disk
+            sv()
+            try:
+                fileloc = g[0]
+                f = open(fileloc, "rb")
+                cproj = pickle.load(f)
+                f.close()
+                cb = hd.ENAME + cproj.name
+                saved = True
+                ahf()
+            except FileNotFoundError:
+                print("file not found")
+        case "unload":
+            sv()
+            cproj = None
+            cb = hd.ENAME
+            fileloc = ""
+            saved = True
+        # print some project data
+        case "hrf":                            # print all values in all patterns in human readable fomat
+            if cproj is not None:
+                print(hd.hrf(cproj))
+                return
             print(hd.NPY)
-            return
-        try:
-            cproj.rootnote = int(g[0])
-        except IndexError:
-            print(cproj.rootnote)
-        return
-    # patter commands
-    try:
-        if cmd == "set":                            # set value
+        case "values":                         # like hrf but stop printing after last play range end
+            if cproj is not None:
+                print(hd.hrf(cproj, a=False))
+                return
+            print(hd.NPY)
+        # project config
+        case "tempo":                          # set or get tempo
+            if cproj is None:
+                print(hd.NPY)
+                return
+            try:
+                cproj.setTempo(int(g[0]))
+                saved = False
+            except IndexError:
+                print(cproj.getTempo())
+        case "rn":
+            if cproj is None:
+                print(hd.NPY)
+                return
+            try:
+                cproj.rootnote = int(g[0])
+            except IndexError:
+                print(cproj.rootnote)
+        # patter commands
+        case "set":                            # set value
             if cproj is None:
                 print(hd.NPY)
                 return
@@ -139,14 +127,13 @@ def exc(g: list):
                 cproj.write(int(g[0]), int(g[1]), int(g[2]))
                 saved = False
                 ahf()
-                return
             except IndexError:
                 print("usage: set PATTERN INDEX VALUE")
                 return
             except ValueError:
                 print("usage: set PATTERN INDEX VALUE")
                 return
-        if cmd == "len":                            # set len of pattern play range
+        case "len":                            # set len of pattern play range
             if cproj is None:
                 print(hd.NPY)
                 return
@@ -158,8 +145,7 @@ def exc(g: list):
                 ahf()
                 return
             print(hd.POOR)
-            return
-        if cmd == "ofs":
+        case "ofs":
             if cproj is None:
                 print(hd.NPY)
                 return
@@ -168,8 +154,7 @@ def exc(g: list):
                 ahf()
                 return
             print(hd.POOR)
-            return
-        if cmd == "plo":                            # when in play range first note will be
+        case "plo":                            # when in play range first note will be
             if cproj is None:
                 print(hd.NPY)
                 return
@@ -178,60 +163,60 @@ def exc(g: list):
                 ahf()
                 return
             print(hd.POOR)
-            return
-    except hd.locked:
-        print(hd.LK)
-        return
-    # pattern things
-    if cmd == "mute":
-        if cproj is None:
-            print(hd.NPY)
-            return
-        cproj.mute(int(g[0]))
-        saved = False
-        return
-    if cmd == "unmute":
-        if cproj is None:
-            print(hd.NPY)
-            return
-        cproj.unmute(int(g[0]))
-        saved = False
-        return
-    if cmd == "lock":
-        if cproj is None:
-            print(hd.NPY)
-            return
-        cproj.lock(int(g[0]))
-        saved = False
-        return
-    if cmd == "unlock":
-        if cproj is None:
-            print(hd.NPY)
-            return
-        cproj.unlock(int(g[0]))
-        saved = False
-        return
-    # NOT READY FUNCTIONS, DEV ONLY
-    if cmd == "ldt":                            # LOAD PATTERNS FROM ONE FILE TO SECOND
-        if cproj is None:
-            print(hd.NPY)
-            return
-        sv()
-        try:
-            cproj.patterns = pickle.load(open(g[0], "rb")).patterns
+        case "shf":                            # shift every value in pattern by g[1]
+            if cproj is None:
+                print(hd.NPY)
+                return
+            cproj.shift(int(g[0]), int(g[1]))
+        # pattern things
+        case "mute":
+            if cproj is None:
+                print(hd.NPY)
+                return
+            cproj.mute(int(g[0]))
             saved = False
             ahf()
-        except IndexError:
-            print("index err")
-        return
-    if cmd == "cpv":                            # COPY ONE PATTERN VALUES TO SECOND
-        if cproj is None:
-            print(hd.NPY)
-            return
-        cproj.patterns[int(g[1])].values = cproj.patterns[int(g[0])].values
-        saved = False
-        return
-    print("invalid command")
+        case "unmute":
+            if cproj is None:
+                print(hd.NPY)
+                return
+            cproj.unmute(int(g[0]))
+            saved = False
+            ahf()
+        case "lock":
+            if cproj is None:
+                print(hd.NPY)
+                return
+            cproj.lock(int(g[0]))
+            saved = False
+            ahf()
+        case "unlock":
+            if cproj is None:
+                print(hd.NPY)
+                return
+            cproj.unlock(int(g[0]))
+            saved = False
+            ahf()
+        # NOT READY FUNCTIONS, DEV ONLY
+        case "ldt":                            # LOAD PATTERNS FROM ONE FILE TO SECOND
+            if cproj is None:
+                print(hd.NPY)
+                return
+            sv()
+            try:
+                cproj.patterns = pickle.load(open(g[0], "rb")).patterns
+                saved = False
+                ahf()
+            except IndexError:
+                print("index err")
+        case "cpv":                            # COPY ONE PATTERN VALUES TO SECOND
+            if cproj is None:
+                print(hd.NPY)
+                return
+            cproj.patterns[int(g[1])].values = cproj.patterns[int(g[0])].values
+            saved = False
+        case _:
+            print(hd.IC)
 
 cb = hd.ENAME
 fileloc = ""
@@ -241,7 +226,10 @@ try:
         print(cb, end="# ")
         v = input().split(";")
         for cm in v:
-            exc(cm.split(" "))
+            try:
+                exc(cm.split(" "))
+            except hd.locked:
+                print(hd.LK)
 except KeyboardInterrupt:
     print("\n")
     sv()
