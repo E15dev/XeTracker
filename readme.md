@@ -2,8 +2,9 @@
 this is XeTracker project<br>
 probably only tracker software made to work in tty mode<br>
 
-on start you probably need to run
-`chmod +x editor.py p2f.py player.py clean.sh count.py sg/build.sh` so you can execute these things
+on start you probably need to run `chmod +x editor.py p2f.py player.py clean.sh count.py sg/build.sh` so you can execute these things<br>
+and<br>
+build sound generator with: `cd sg; ./build.sh; cd ..` (you need to be in project root dir for it to work, if you are already in sg just run `./build.sh`)<br>
 
 # files
 `clean.sh` - remove all stuff generated when running + test.xetrp<br>
@@ -24,6 +25,5 @@ list commands by doing `help` in editor<br>
 you can also use `;` in commands (no spaces) and it will be like list of commands, for example `new test;set 1 1 1;hrf;save;exit`<br>
 
 # example
-0. build sound generator with: `cd sg; ./build.sh; cd ..` (you need to be in project root dir for it to work, if you are already in sg just run `./build.sh`)
 1. with editor create example project: `echo -e "new test;tempo 113;set 0 1 12;set 0 3 24;set 0 4 12;set 0 6 7;save;exit" | ./editor.py`
 2. play it with: `./player.py test.xetrp 0 | ./p2f.py | sg/soundgen`
