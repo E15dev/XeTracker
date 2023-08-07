@@ -20,12 +20,13 @@ tempo [TEMPO]   - set project tempo to TEMPO or show current tempo if no args
 len PI VAL      - set play range len of patter PI to VAL
 ofs PI VAL      - set play range offset of pattern PI to VAL
 plo PI VAL      - set which note is first in play range
-lock            - lock pattern
-unlock          - unlock pattern
-mute            - mute pattern
-unmute          - unmute pattern
-rn              - set root note for player, default is c (3), to set it to a just type `rn 0`
+lock PI         - lock pattern with id PI
+unlock PI       - unlock pattern with id PI
+mute PI         - mute pattern with id PI
+unmute PI       - unmute pattern with id PI
+rn N            - set root note for player to N. default is c (3), to set it to a just type `rn 0`
 unload          - unload current project, like closing and opening editor again, but you keep session config like auto or hv
+shf PI VAL      - shift every note in pattern PI by VAL
 """
 
 
