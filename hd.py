@@ -27,6 +27,7 @@ unmute PI       - unmute pattern with id PI
 rn N            - set root note for player to N. default is c (3), to set it to a just type `rn 0`
 unload          - unload current project, like closing and opening editor again, but you keep session config like auto or hv
 shf PI VAL      - shift every note in pattern PI by VAL
+cpv PI PA       - copy values from patter with id PI to pattern with id PA
 """
 
 
@@ -149,7 +150,7 @@ class TrFile:
         # test for every pattern and check if i it's in patterns PR if so, return True if for every pattern its outside PR it will be Fale
         m = False
         for pt in self.patterns:
-            m = m or pt.isInPR(i)
+            m = m or (pt.isInPR(i) and not pt.muted)
         return m
 
     def setRN(self, n: int):
@@ -177,8 +178,13 @@ def padstr(s: str, l: int):
         return "#" * l
     return s + (l-len(s)) * " "
 
-def hrf(pr: TrFile, a=True):
+def hrf(pr: TrFile, a=True, h=True):
     g = ""
+    if h:   # HEADER
+        g = g + padstr("", 6) + " "
+        for i in range(len(pr.patterns)):
+            g = g + color_index + padstr(str(hex(i))[2:] + color_reset, 6+len(color_reset))
+        g = g + "\n"
     for i in range(MPL):
         if a or pr.isInPRAll(i):
             g = g + color_index + padstr(str(hex(i))[2:], 6) + color_reset + " "
