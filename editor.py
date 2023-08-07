@@ -168,6 +168,14 @@ def exc(g: list):
                 print(hd.NPY)
                 return
             cproj.shift(int(g[0]), int(g[1]))
+        case "cpv":                            # COPY VALUES FROM PATTERN WITH ID PI TO PATTERN WITH ID PA
+            if cproj is None:
+                print(hd.NPY)
+                return
+            for i in range(hd.MPL):
+                cproj.patterns[int(g[1])].values[i] = cproj.patterns[int(g[0])].values[i]
+            saved = False
+            ahf()
         # pattern things
         case "mute":
             if cproj is None:
@@ -209,12 +217,6 @@ def exc(g: list):
                 ahf()
             except IndexError:
                 print("index err")
-        case "cpv":                            # COPY ONE PATTERN VALUES TO SECOND
-            if cproj is None:
-                print(hd.NPY)
-                return
-            cproj.patterns[int(g[1])].values = cproj.patterns[int(g[0])].values
-            saved = False
         case _:
             print(hd.IC)
 
