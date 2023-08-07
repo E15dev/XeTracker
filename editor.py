@@ -234,8 +234,12 @@ try:
                 print(hd.LK)
             except IndexError:
                 print("probably wrong usage of this command")
+            except AttributeError:
+                print("probably this project is too old already, use older version of XeTracker")
+            except KeyboardInterrupt: # because else instead quiting it will print "something went wrong..."
+                raise KeyboardInterrupt
             except:
-                print("something went wrong, and it wasnt caught by other exceptions")
+                print("something went wrong, and it wasnt caught by other exceptions, you may want to restart XeTracker now")
 except KeyboardInterrupt:
     print("\n")
     sv()
