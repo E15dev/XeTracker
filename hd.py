@@ -162,8 +162,13 @@ class TrFile:
 
     def mute(self, pi: int):
         self.patterns[pi].muted = True
+
     def unmute(self, pi: int):
         self.patterns[pi].muted = False
+
+    def shift(self, pi: int, val: int):
+        for i in range(MPL):
+            self.patterns[pi].write(i, self.patterns[pi].read(i) + val)
 
 
 def padstr(s: str, l: int):
