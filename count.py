@@ -7,7 +7,11 @@ fn = [
 "hd.py",
 "p2f.py",
 "player.py",
-"readme.md"]
+"readme.md",
+"sg/build.sh",
+"sg/soundgen.cpp",
+"sg/sg.h",
+"sg/rand.py"]
 
 tch = 0
 tl = 0
