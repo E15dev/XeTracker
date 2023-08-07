@@ -13,18 +13,20 @@ int main() {
     sf::Sound sp;
 
     double fq;
+    double lfq = 0;
     while (1) {
         cin>>fq;
+        if (fq != lfq) {
+            samples.clear();
+            for (int i = 0; i < 44100; i++) {
+                samples.push_back(sound::SineWave(i, fq, amp));
+            }
 
-        samples.clear();
-        for (int i = 0; i < 44100; i++) {
-            samples.push_back(sound::SineWave(i, fq, amp));
+            sb.loadFromSamples(&samples[0], samples.size(), 2, 44100);
+            sp.setBuffer(sb);
+            sp.setLoop(true);
+            sp.play();
         }
-
-        sb.loadFromSamples(&samples[0], samples.size(), 2, 44100);
-        sp.setBuffer(sb);
-        sp.setLoop(true);
-        sp.play();
     }
 
     return 0;
