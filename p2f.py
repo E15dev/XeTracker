@@ -25,10 +25,13 @@ if __name__ == "__main__":
     import sys
     try:
         while True:
-            p = sys.stdin.readline()[:-1]   # cut "\n" from end
-            if p == "":
-                raise KeyboardInterrupt     # probably i will need to add printing something on end so sound gen with know that it also needs to stop
-            sys.stdout.write(str(convert(int(p))) + "\n")
+            p = sys.stdin.readline()[:-1].split(" ")    # cut "\n" from end
+            if len(p) == 0:
+                raise KeyboardInterrupt                 # probably i will need to add printing something on end so sound gen with know that it also needs to stop
+            d = ""
+            for v in p:
+                d = d + " " + str(convert(int(v)))
+            sys.stdout.write(d[1:] + "\n")              # d[0] is always space
             sys.stdout.flush()
     except KeyboardInterrupt:
         pass
