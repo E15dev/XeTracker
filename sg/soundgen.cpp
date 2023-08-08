@@ -27,6 +27,7 @@ int main() {
             sp.setLoop(true);
             sp.play();
         }
+        lfq = fq;
     }
 
     return 0;
