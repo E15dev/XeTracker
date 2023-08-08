@@ -3,8 +3,11 @@ import sys
 import pickle
 from time import time
 
-fp = sys.argv[1]
-pi = int(sys.argv[2])
+sys.argv.pop(0)                                                 #
+fp = sys.argv.pop(0)                                            # first arg is project path
+pis = []
+for arg in sys.argv:
+        pis.append(int(arg))
 
 try:
     f = open(fp, "rb")
@@ -12,12 +15,14 @@ try:
     tempo = cproj.getTempo()
     tn = time()
     i = 0
-    if cproj.patterns[pi].muted:
-        raise KeyboardInterrupt
     while True:
         while time()-tn < i*(60/tempo):
             pass
-        sys.stdout.write(str(cproj.playerRead(pi, i)) + "\n")
+        d = ""
+        for pi in pis:
+            if not cproj.patterns[pi].muted:
+                d = d + " " + str(cproj.playerRead(pi, i))
+        sys.stdout.write(d[1:] + "\n")                          # first char is always space
         sys.stdout.flush()
         i = i + 1
 except KeyboardInterrupt:
