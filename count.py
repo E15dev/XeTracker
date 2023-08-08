@@ -5,6 +5,7 @@ fn = [
 "editor.py",
 "fg.py",
 "hd.py",
+"tx.py",
 "p2f.py",
 "player.py",
 "readme.md",
