@@ -1,46 +1,15 @@
 # this file just have all config and definitions for editor and player
 
-
 import pickle
 MPL = 64                                                # changing this will break everything when loading old project
+HRFLW = 8                                               # TODO: THIS SHOULD DEPEND ON NUMBER OF PATTERNS IN PROJECT
 
-
-COMMANDS = """
-help            - prints this help
-exit            - exit editor
-auto            - enable/disable hrf after every command
-hv              - subsetting for "auto" command, set if use hrf or values
-new NAME        - crate project NAME
-save            - save project as "{CPROJ.NAME}.xetrp"
-load PATH       - load project from given PATH
-hrf             - show all values in all patterns
-values          - like hrf but skip all places outside playranges
-set PI I VAL    - set value I in pattern PI to VAL
-tempo [TEMPO]   - set project tempo to TEMPO or show current tempo if no args
-len PI VAL      - set play range len of patter PI to VAL
-ofs PI VAL      - set play range offset of pattern PI to VAL
-plo PI VAL      - set which note is first in play range
-lock PI         - lock pattern with id PI
-unlock PI       - unlock pattern with id PI
-mute PI         - mute pattern with id PI
-unmute PI       - unmute pattern with id PI
-rn N            - set root note for player to N. default is c (3), to set it to a just type `rn 0`
-unload          - unload current project, like closing and opening editor again, but you keep session config like auto or hv
-shf PI VAL      - shift every note in pattern PI by VAL
-cpv PI PA       - copy values from patter with id PI to pattern with id PA
-"""
-
-
-ENAME = "XeTrEditor:"                                   # base comman input (no project name)
-NPY = "you arent editing any project yet"               # error message when you dont have loaded project
-POOR = "probably pattern id is too big"                 # error when trying to access pattern out of range
-LK = "this pattern is locked, use unlock on it first"   # to LOCKED exception
 leghrf = False                                          # TODO: ADD CHECK IF PRINT OUTPUT SUPPORT COLORS AND SET IT THEN
 color_reset, color_invert, color_index, color_first, color_current, color_locked, color_muted = "", "", "", "", "", "", ""
 if not leghrf:
     color_reset = "\033[0m"                             # reset everything
     color_invert = "\033[7m"                            # invert bacground and text color
-    color_index = "\033[36m"                            # color of index
+    color_index = color_reset + "\033[36m"              # color of index
     color_first = color_invert + "\033[46m"             # color of first not in playrange
     color_current = "\033[1m"                           # CURRENT IS NOT USED YET, WILL BE WHEN I WILL MADE BETTER EDITOR SO YOU COULD LIKE USE ARROWS TO SELECT WHICH TO MODIFY AND NOT NEED TO USE (hrf) and (set) EVERY TIME
     color_locked = "\033[41m"                           # when locked
@@ -51,7 +20,7 @@ class locked(Exception):
     """when trying to edit locked pattern"""
     pass
 
-
+# ------CLASSS------
 class TrPattern:
     def __init__(self, l=8, ofs=0, pofs=0):
         self.values = []
@@ -74,7 +43,7 @@ class TrPattern:
     def isInPR(self, i):
         start = self.proffset % MPL
         end = (self.prlen + self.proffset) % MPL
-        return ((start < end) and (i >= start) and (i < end)) or ((end < start) and ((i >= 0 and i < end) or (i <= MPL and i >= start)))
+        return (start == end) or ((start < end) and (i >= start) and (i < end)) or ((end < start) and ((i >= 0 and i < end) or (i <= MPL and i >= start)))
 
     def fPVI(self): # first player value index
         return (self.proffset + ((self.poffset)%self.prlen)) % MPL
@@ -99,12 +68,13 @@ class TrFile:
 
     def setLen(self, pi: int, l:int):
         try:
+            if (l > 64 or l < 1):
+                return False
             self.patterns[pi].prlen = l
             self.patterns[pi].poffset = self.patterns[pi].poffset % self.patterns[pi].prlen
         except IndexError:
             return False
         return True
-
 
     def getTempo(self):
         return self.tempo
@@ -128,7 +98,6 @@ class TrFile:
         except IndexError:
             return False
         return True
-
 
     def getPROffset(self, pi: int):
         return self.patterns[pi].proffset
@@ -172,7 +141,6 @@ class TrFile:
         for i in range(MPL):
             self.patterns[pi].write(i, self.patterns[pi].read(i) + val)
 
-
 def padstr(s: str, l: int):
     if len(s) > l:
         return "#" * l
@@ -181,25 +149,25 @@ def padstr(s: str, l: int):
 def hrf(pr: TrFile, a=True, h=True):
     g = ""
     if h:   # HEADER
-        g = g + padstr("", 6) + " "
+        g = g + padstr("", HRFLW) + " "
         for i in range(len(pr.patterns)):
-            g = g + color_index + padstr(str(hex(i))[2:] + color_reset, 6+len(color_reset))
+            g = g + color_index + padstr(str(hex(i))[2:] + color_reset, HRFLW+len(color_reset))
         g = g + "\n"
     for i in range(MPL):
         if a or pr.isInPRAll(i):
-            g = g + color_index + padstr(str(hex(i))[2:], 6) + color_reset + " "
+            g = g + color_index + padstr(str(hex(i))[2:], HRFLW) + color_reset + " "
             for pt in pr.patterns:
-                if pt.muted:
-                    g = g + color_muted + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
-                elif i == pt.fPVI():
-                    g = g + color_first + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
-                elif pt.locked and pt.isInPR(i):
-                    g = g + color_invert + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
-                elif pt.locked:
-                    g = g + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
-                elif pt.isInPR(i):
-                    g = g + color_invert + padstr(str(hex(pt.read(i)))[2:] + color_reset, 6+len(color_reset))
-                else:
-                    g = g + padstr(str(hex(pt.read(i)))[2:], 6)
+                if pt.muted:                        # muted pattern
+                    g = g + color_muted + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                elif i == pt.fPVI():                # first play range note (first played by player i mean)
+                    g = g + color_first + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                elif pt.locked and pt.isInPR(i):    # play range of locked pattern
+                    g = g + color_invert + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                elif pt.locked:                     # locked pattern
+                    g = g + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                elif pt.isInPR(i):                  # play ranges
+                    g = g + color_invert + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                else:                               # just print it as normal text
+                    g = g + padstr(str(hex(pt.read(i)))[2:], HRFLW)
             g = g + "\n"
     return "\r" + g + color_reset + "\n"
