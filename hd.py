@@ -54,7 +54,7 @@ class TrFile:
         self.patterns = []
         self.name = name
         self.tempo = tempo
-        self.rootnote = 0       # its a, set to 3 for c
+        self.rootnote = 3       # its c, set to 0 for a
         for i in range(pcount):
             self.patterns.append(TrPattern())
 
