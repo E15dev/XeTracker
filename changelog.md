@@ -25,7 +25,7 @@ now you can just use it. works only one channel at the time.
 15. "remove pattern" and "add pattern" functions (dev only for now)
 
 
-# 0.9 (23.08.2023)
+# beta (23.08.2023)
 1. totally new editor, and color_current is being used
 2. better save function
 3. command can have a lot of spaces on beggining and end and still work
