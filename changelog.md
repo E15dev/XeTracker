@@ -1,5 +1,5 @@
 # alpha (06.08.2023)
-now you can just use it. works only one channel at the time. you can just use it. works only one channel at the time.
+now you can just use it. works only one channel at the time.
 
 # alpha 2 (also 06.08.2023)
 1. lock/unlock patterns
@@ -23,3 +23,17 @@ now you can just use it. works only one channel at the time. you can just use it
 13. dev commands are now by default rejected unless you use "." before it
 14. using space on end of command dont break everything
 15. "remove pattern" and "add pattern" functions (dev only for now)
+
+
+# 0.9 (23.08.2023)
+1. totally new editor, and color_current is being used
+2. better save function
+3. command can have a lot of spaces on beggining and end and still work
+4. clean.sh use -f
+5. `rp` and `ap` functions are now official
+6. `reload` function (close current project and load it from last save)
+7. highlighting commands (in help)
+8. if no patterns specified as player.py args, it will play all not muted ones
+9. `chrd` command and chords.py file
+10. `tx.NMP` - if you need more patterns to do that action
+
