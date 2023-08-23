@@ -5,15 +5,16 @@ MPL = 64                                                # changing this will bre
 HRFLW = 8                                               # TODO: THIS SHOULD DEPEND ON NUMBER OF PATTERNS IN PROJECT
 
 leghrf = False                                          # TODO: ADD CHECK IF PRINT OUTPUT SUPPORT COLORS AND SET IT THEN
-color_reset, color_invert, color_index, color_first, color_current, color_locked, color_muted = "", "", "", "", "", "", ""
+color_reset, color_invert, color_index, color_first, color_current, color_locked, color_muted, color_command = "", "", "", "", "", "", "", ""
 if not leghrf:
     color_reset = "\033[0m"                             # reset everything
     color_invert = "\033[7m"                            # invert bacground and text color
     color_index = color_reset + "\033[36m"              # color of index
     color_first = color_invert + "\033[46m"             # color of first not in playrange
-    color_current = "\033[1m"                           # CURRENT IS NOT USED YET, WILL BE WHEN I WILL MADE BETTER EDITOR SO YOU COULD LIKE USE ARROWS TO SELECT WHICH TO MODIFY AND NOT NEED TO USE (hrf) and (set) EVERY TIME
+    color_current = "\033[1m"                           # now its used!
     color_locked = "\033[41m"                           # when locked
     color_muted = "\033[41m\033[30m"                    # when pattern is muted
+    color_command = "\033[46m"                          # highlight commands
 
 # ----EXCEPTIONS----
 class locked(Exception):
@@ -146,7 +147,7 @@ def padstr(s: str, l: int):
         return "#" * l
     return s + (l-len(s)) * " "
 
-def hrf(pr: TrFile, a=True, h=True):
+def hrf(pr: TrFile, a=True, h=True, current=None):
     g = ""
     if h:   # HEADER
         g = g + padstr("", HRFLW) + " "
@@ -156,8 +157,11 @@ def hrf(pr: TrFile, a=True, h=True):
     for i in range(MPL):
         if a or pr.isInPRAll(i):
             g = g + color_index + padstr(str(hex(i))[2:], HRFLW) + color_reset + " "
-            for pt in pr.patterns:
-                if pt.muted:                        # muted pattern
+            for pi in range(len(pr.patterns)):
+                pt = pr.patterns[pi]
+                if current is not None and pi == current[0] and i == current[1]:
+                    g = g + color_current + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                elif pt.muted:                      # muted pattern
                     g = g + color_muted + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
                 elif i == pt.fPVI():                # first play range note (first played by player i mean)
                     g = g + color_first + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
@@ -171,3 +175,13 @@ def hrf(pr: TrFile, a=True, h=True):
                     g = g + padstr(str(hex(pt.read(i)))[2:], HRFLW)
             g = g + "\n"
     return "\r" + g + color_reset + "\n"
+
+def cleanS(s: str):
+    try:
+        while s[0] == " ":
+            s = s[1:]
+        while s[-1] == " ":
+            s = s[:-1]
+        return s
+    except IndexError:
+        return ""
