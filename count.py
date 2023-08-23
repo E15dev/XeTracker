@@ -12,7 +12,8 @@ fn = [
 "sg/build.sh",
 "sg/soundgen.cpp",
 "sg/sg.h",
-"sg/rand.py"]
+"sg/rand.py",
+"chords.py"]
 
 tch = 0
 tl = 0
