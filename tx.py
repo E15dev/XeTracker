@@ -1,4 +1,4 @@
-# structure is: "COMMAND: (INFO, USAGE)"
+# structure is: "COMMAND: (INFO, ARGS)"
 
 cmds = {
 # base
@@ -46,12 +46,12 @@ prefixes = {
 }
 
 ENAME = "XeTrEditor:"                                   # base command input text (no project name)
-USAGE = "USAGE:"                                        # what to print before saying usage of command (when command used wrong)
+USAGE = "ARGS:"                                         # what to print before saying usage of command (when command used wrong)
 NPY = "you arent editing any project yet"               # error message when you dont have loaded project
 POOR = "probably pattern id is too big"                 # error when trying to access pattern out of range
 LK = "this pattern is locked, use unlock on it first"   # when trying to write to locked pattern
 IC = "invalid command"                                  # when cmd cant match any commands
-OD = "project may be too old aleady, try older editor"  # when i make too much changes and projects arent compatible
+OD = "this project may be too old aleady, try older version of program" # when i make too much changes and projects arent compatible
 CHRDNF = "chord not found"                              # well, when chord not found
 NPM = "you need more patterns in project to do that"    # when for example you want to do "chrd 0 0 min" which needs to set 3 notes, but you only have 2 channels
 VI = "VALUE:"                                           # asked for example in .edit command
