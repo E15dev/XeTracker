@@ -2,18 +2,20 @@
 import fg as gen
 import hd
 import tx
-import pickle
 from random import random
 import chords
+from time import time
+from cf import saveProj, readProj
 
 def sv():
-    if cproj is None or saved:
-        return
+    if cproj is None or saved: return
+    cproj.time += round(time() - timeS)
+    timeS = time()
     try:
         while True:
             match input("save? [Y/n]").lower():
                 case "y":
-                    cproj.save(fileloc)
+                    saveProj(fileloc, cproj)
                     break
                 case "n":
                     break
@@ -22,12 +24,10 @@ def sv():
     except EOFError:
         print("not saved, because EOF")
 
-def ahf(cr=None): # AUTO HRF
-    if cproj is not None:
-        print(hd.hrf(cproj, a=av, current=cr))
+def ahf(cr=None):
+    if cproj is not None and len(cproj.patterns) > 0: print(hd.hrf(cproj, a=av, current=cr))
 
 def exc(g: list):
-    global cb
     global fileloc
     global cproj
     global saved
@@ -52,31 +52,25 @@ def exc(g: list):
             raise KeyboardInterrupt            #   it just jump to except in main which handle exiting
         case "new":                            # create new file
             sv()
-            fileloc = g[0] + ".xetrp"
+            fileloc = g[0] + ".xetrproj"
             cproj = gen.empty(4, g[0])
-            cb = tx.ENAME + cproj.name
        	    saved = False
         case "random":
             sv()
-            fileloc = g[0] + ".xetrp"
+            fileloc = g[0] + ".xetrproj"
             cproj = gen.random(4, g[0])
-            cb = tx.ENAME + cproj.name
        	    saved = False
         case "load":                           # load file from disk
             sv()
             try:
                 fileloc = g[0]
-                f = open(fileloc, "rb")
-                cproj = pickle.load(f)
-                f.close()
-                cb = tx.ENAME + cproj.name
+                cproj = readProj(fileloc)
                 saved = True
             except FileNotFoundError:
                 print("file not found")
         case "unload":
             sv()
             cproj = None
-            cb = tx.ENAME
             fileloc = ""
             saved = True
         case _:
@@ -88,7 +82,7 @@ def exc(g: list):
         case "go":
             pi, i = int(g[0]), int(g[1])
         case "save":                           # save current file
-            cproj.save(fileloc)
+            saveProj(fileloc, cproj)
             saved = True
         case "hrf":                            # print all values in all patterns in human readable fomat
             print(hd.hrf(cproj))
@@ -126,9 +120,9 @@ def exc(g: list):
             print(tx.POOR)
         case "shf":                            # shift every value in pattern by g[1]
             cproj.shift(pi, int(g[0]))
-        case "cpv":                            # COPY VALUES FROM PATTERN WITH ID PI TO PATTERN WITH ID PA
+        case "cpv":                            # COPY NOTES FROM PATTERN WITH ID PI TO PATTERN WITH ID PA
             for ni in range(hd.MPL):
-                cproj.patterns[int(g[0])].values[ni] = cproj.patterns[pi].values[ni]
+                cproj.patterns[int(g[0])].notes[ni] = cproj.patterns[pi].notes[ni]
             saved = False
         case "mute":
             cproj.mute(pi)
@@ -149,19 +143,16 @@ def exc(g: list):
             if cproj.patterns[pi].locked:
                 raise hd.locked
             cproj.patterns.pop(pi)
-            pi = (pi-1)%len(cproj.patterns)
+            pi = (pi-1)%(len(cproj.patterns) + (len(cproj.patterns)<1)) # so wont be 0DivErr when you delete last pattern. also after deleting last pattern pi will be always be set to 0 which is not breaking anything
             saved = False
         case "reload":                          # make this like end current editor process, and start new in which will be loaded current project from file
             if not tx.areYouSure():
                 return
-            f = open(fileloc, "rb")
-            cproj = pickle.load(f)
-            f.close()
-            cb = tx.ENAME + cproj.name
+            cproj = readProj(fileloc)
             pi, i = 0, 0
             saved = True
         case "chrd":
-            n = cproj.read(pi, i)
+            n = cproj.read(pi, i).pitch
             chr = chords.mch(str(g[0]))
             if len(chr) > len(cproj.patterns):
                 raise chords.nmp
@@ -172,28 +163,35 @@ def exc(g: list):
         case "ldt":                             # load patterns from file to cproj
             sv()
             try:
-                cproj.patterns = pickle.load(open(g[0], "rb")).patterns
+                cproj.patterns = readProj(g[0]).patterns
                 saved = False
             except IndexError:
                 print("index err")
+        case "time":
+            print(cproj.time + round(time()-timeS))
+        case "name":
+            tmp = ""
+            for s in g: # beause args are space separated, it need to connect them back to have spaces
+                tmp = tmp + " " + s
+            cproj.name = s
 
 print(f"{hd.color_reset}\nwelcome to XeTracker!\nuse {hd.color_command}/help{hd.color_reset} for help\n")
 
 av = False # use values
 am = False
 saved = True
-cb = tx.ENAME
 fileloc = ""
 cproj = None
 pi = 0
 i = 0
+timeS = time()
 
 try:
     while True:
         ahf(cr=[pi, i])
-        cm = input("\n" + cb + ("*"*(not saved)) + " # ")
+        cm = input("\n" + tx.ENAME + (cproj.name if cproj is not None else "") + ("*"*(not saved)) + "# ")
         cm = hd.cleanS(cm)
-        cm += "p"*(cm == "") # if cm is empty then set it to "+0"
+        cm += "p"*(cm == "") # if cm is empty then set it to "+0", which means it wont change anything, but will triger am
         try:
             match cm[0]:
                 case "p": # pass
@@ -218,11 +216,11 @@ try:
                             saved = False
                             i += am
                         if cm[0] == "+":
-                            cproj.write(pi, i, cproj.read(pi, i) + int(cm[1:]))
+                            cproj.write(pi, i, cproj.read(pi, i).pitch + int(cm[1:]))
                             saved = False
                             i += am
                         if cm[0] == "-":
-                            cproj.write(pi, i, cproj.read(pi, i) - int(cm[1:]))
+                            cproj.write(pi, i, cproj.read(pi, i).pitch - int(cm[1:]))
                             saved = False
                             i += am
                         match cm:
@@ -235,7 +233,9 @@ try:
                             case "d": # move down
                                 i = (i+1)%hd.MPL
                             case "s": # save
-                                cproj.save(fileloc)
+                                cproj.time += round(time()-timeS)
+                                timeS = time()
+                                saveProj(fileloc, cproj)
                                 saved = True
         except hd.locked:
             print(tx.LK)
@@ -249,8 +249,8 @@ try:
             print(tx.OD)
         except KeyboardInterrupt: # because else instead quiting it would print "something went wrong..."
             raise KeyboardInterrupt
-        except:
-            print("something went wrong, and it wasnt caught by other exceptions, you may want to restart XeTracker now")
+#        except:
+#            print("something went wrong, and it wasnt caught by other exceptions, you may want to restart XeTracker now")
 except KeyboardInterrupt:
     print("\n")
     sv()
