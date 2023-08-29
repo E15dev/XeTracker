@@ -12,30 +12,28 @@ int main() {
     sf::SoundBuffer sb;
     vector<sf::Int16> samples;
     sf::Sound sp;
+    sp.setLoop(true);
 
     string inp;
-    vector<float> fq;
+    vector<float> vals;
     float tmpv;
-
 
     while (1) {
         samples.clear();
-        for (int i = 0; i < 44100; i++) { samples.push_back(sound::SineWave(i, 0, 0)); } // make sample 44100 long but full of 0s
-
+        for (int i = 0; i < 44100; i++) { samples.push_back(0);} // make "samples" 44100 long (probably there is better way, but i have no internet to check)
         getline(cin, inp);
         istringstream iss(inp);
 
-        fq.clear();
-        while (iss >> tmpv) { fq.push_back(tmpv); }
-        for (int j = 0; j < fq.size(); j++) {
-            for (int i = 0; i < 44100; i++) {
-                samples[i] += sound::SineWave(i, fq[j], amp);
+        vals.clear();
+        while (iss >> tmpv) { vals.push_back(tmpv); }
+        for (int j = 0; j < vals.size()/4; j++) {
+            if (vals[j*4] != 0.0) { // ignore if volume is 0
+                for (int i = 0; i < 44100; i++) { samples[i] += waveforms::Sine(i, vals[(j*4)+1], amp*vals[j*4]); }
             }
         }
 
         sb.loadFromSamples(&samples[0], samples.size(), 2, 44100);
         sp.setBuffer(sb);
-        sp.setLoop(true);
         sp.play();
     }
 
