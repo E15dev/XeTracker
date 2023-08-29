@@ -1,6 +1,5 @@
 # this file just have all config and definitions for editor and player
 
-import pickle
 MPL = 64                                                # changing this will break everything when loading old project
 HRFLW = 8                                               # TODO: THIS SHOULD DEPEND ON NUMBER OF PATTERNS IN PROJECT
 
@@ -22,24 +21,42 @@ class locked(Exception):
     pass
 
 # ------CLASSS------
+class TrInstrument:
+    def __init__(self, type: int, data: bytes):
+        if len(data)>255:
+            raise OverflowError
+        self.type = type
+        while len(data) < 255:
+            data = b''.join([data, b'\x00'])
+        self.data = data
+
+class TrNote:
+    def __init__(self, vol=192, pitch=0):
+        self.vol = vol
+        self.pitch = pitch
+
 class TrPattern:
     def __init__(self, l=8, ofs=0, pofs=0):
-        self.values = []
+        self.notes = []
         self.prlen = l          # length of play range
         self.proffset = ofs     # where play range starts
         self.poffset = pofs     # where in play range, first note is (for player)
         self.locked = False
         self.muted = False
+        self.instrument = 0
         for i in range(MPL):
-            self.values.append(0)
+            self.notes.append(TrNote())
 
     def read(self, i):
-        return self.values[i]
+        return self.notes[i]
 
-    def write(self, i, val):
+    def write(self, i, pitch=None, vol=None):
         if self.locked:
             raise locked
-        self.values[i] = val
+        if pitch is not None:
+            self.notes[i].pitch = pitch
+        if vol is not None:
+            self.notes[i].vol = vol
 
     def isInPR(self, i):
         start = self.proffset % MPL
@@ -49,20 +66,23 @@ class TrPattern:
     def fPVI(self): # first player value index
         return (self.proffset + ((self.poffset)%self.prlen)) % MPL
 
+    def playerIndex(self, i):
+        return (self.proffset + ((i+self.poffset)%self.prlen)) % MPL
 
-class TrFile:
-    def __init__(self, pcount: int, name: str, tempo=120):
+
+class TrProject:
+    def __init__(self, pcount: int, name: str, tempo=120, instc=1):
         self.patterns = []
+        self.instruments = [] # TODO
         self.name = name
+        self.time = 0
+        self.author = ""
         self.tempo = tempo
         self.rootnote = 3       # its c, set to 0 for a
         for i in range(pcount):
             self.patterns.append(TrPattern())
-
-    def save(self, path):
-        f = open(path, 'wb')
-        pickle.dump(self, f)
-        f.close()
+        for i in range(instc):
+            self.instruments.append(TrInstrument(0x50, b''))
 
     def getLen(self, pi: int):
         return self.patterns[pi].prlen
@@ -86,12 +106,12 @@ class TrFile:
     def read(self, pi, i):
         return self.patterns[pi].read(i)
 
-    def write(self, pi, i, val):
-        return self.patterns[pi].write(i, val)
+    def write(self, pi, i, pitch=None, vol=None):
+        return self.patterns[pi].write(i, pitch=pitch, vol=vol)
 
     def playerRead(self, pi, i):
         cp = self.patterns[pi]
-        return self.rootnote + cp.read((cp.proffset + ((i+cp.poffset)%cp.prlen)) % MPL)
+        return self.rootnote + cp.read(cp.playerIndex(i))
 
     def setPROffset(self, pi: int, o: int):
         try:
@@ -140,14 +160,14 @@ class TrFile:
 
     def shift(self, pi: int, val: int):
         for i in range(MPL):
-            self.patterns[pi].write(i, self.patterns[pi].read(i) + val)
+            self.patterns[pi].write(i, pitch=self.patterns[pi].read(i).pitch + val)
 
 def padstr(s: str, l: int):
     if len(s) > l:
         return "#" * l
     return s + (l-len(s)) * " "
 
-def hrf(pr: TrFile, a=True, h=True, current=None):
+def hrf(pr: TrProject, a=True, h=True, current=None):
     g = ""
     if h:   # HEADER
         g = g + padstr("", HRFLW) + " "
@@ -160,19 +180,19 @@ def hrf(pr: TrFile, a=True, h=True, current=None):
             for pi in range(len(pr.patterns)):
                 pt = pr.patterns[pi]
                 if current is not None and pi == current[0] and i == current[1]:
-                    g = g + color_current + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                    g = g + color_current + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
                 elif pt.muted:                      # muted pattern
-                    g = g + color_muted + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                    g = g + color_muted + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
                 elif i == pt.fPVI():                # first play range note (first played by player i mean)
-                    g = g + color_first + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                    g = g + color_first + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
                 elif pt.locked and pt.isInPR(i):    # play range of locked pattern
-                    g = g + color_invert + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                    g = g + color_invert + color_locked + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
                 elif pt.locked:                     # locked pattern
-                    g = g + color_locked + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                    g = g + color_locked + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
                 elif pt.isInPR(i):                  # play ranges
-                    g = g + color_invert + padstr(str(hex(pt.read(i)))[2:] + color_reset, HRFLW+len(color_reset))
+                    g = g + color_invert + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
                 else:                               # just print it as normal text
-                    g = g + padstr(str(hex(pt.read(i)))[2:], HRFLW)
+                    g = g + padstr(str(hex(pt.read(i).pitch))[2:], HRFLW)
             g = g + "\n"
     return "\r" + g + color_reset + "\n"
 
