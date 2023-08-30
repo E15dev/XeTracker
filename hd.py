@@ -10,7 +10,7 @@ if not leghrf:
     color_invert = "\033[7m"                            # invert bacground and text color
     color_index = color_reset + "\033[36m"              # color of index
     color_first = color_invert + "\033[46m"             # color of first not in playrange
-    color_current = "\033[1m"                           # now its used!
+    color_current = "\033[2;5m"                         # now its used!
     color_locked = "\033[41m"                           # when locked
     color_muted = "\033[41m\033[30m"                    # when pattern is muted
     color_command = "\033[46m"                          # highlight commands
@@ -179,20 +179,20 @@ def hrf(pr: TrProject, a=True, h=True, current=None):
             g = g + color_index + padstr(str(hex(i))[2:], HRFLW) + color_reset + " "
             for pi in range(len(pr.patterns)):
                 pt = pr.patterns[pi]
-                if current is not None and pi == current[0] and i == current[1]:
-                    g = g + color_current + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
-                elif pt.muted:                      # muted pattern
-                    g = g + color_muted + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
+                col = ""
+                if pt.muted:                      # muted pattern
+                    col = color_muted
                 elif i == pt.fPVI():                # first play range note (first played by player i mean)
-                    g = g + color_first + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
+                    col = color_first
                 elif pt.locked and pt.isInPR(i):    # play range of locked pattern
-                    g = g + color_invert + color_locked + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
+                    col = color_invert + color_locked
                 elif pt.locked:                     # locked pattern
-                    g = g + color_locked + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
+                    col = color_locked
                 elif pt.isInPR(i):                  # play ranges
-                    g = g + color_invert + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
-                else:                               # just print it as normal text
-                    g = g + padstr(str(hex(pt.read(i).pitch))[2:], HRFLW)
+                    col = color_invert
+                if current is not None and pi == current[0] and i == current[1]:
+                    col = col + color_current
+                g = g + col + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
             g = g + "\n"
     return "\r" + g + color_reset + "\n"
 
