@@ -2,17 +2,18 @@
 ## file
 1. 8 bytes is always "XeTrProj"
 2. 2 bytes of editor version (unsigned int)
-3. 128 bytes of project name (padded with null bytes)
-4. 64 bytes of project author name (padded with null bytes)
-5. 2 bytes of "time spent on project" in second (unsigned int) which will be measured by editor (MAY NEED TO BE BIGGER)
-6. 1 byte of root note (signed)
-7. 2 bytes of tempo (signed int)
-8. 1 byte number of instruments that are stored in file (unsigned)
-9. 1 byte number of patterns that are stored in file (unsigned)
-10. (number of instruments)*256 bytes
-11. (number of patterns)*(size of pattern)
-12. 64 bytes, repeating ":3", <!-- dont even ask why, im writing this at 2 am-->this is end of "project section"
-13. (start of this is data section=0) raw data, that will be pointed by for example instruments, like samples
+3. 2 bytes of encoder name ("PY" or "C+")
+4. 128 bytes of project name (padded with null bytes)
+5. 64 bytes of project author name (padded with null bytes)
+6. 2 bytes of "time spent on project" in second (unsigned int) which will be measured by editor (MAY NEED TO BE BIGGER)
+7. 1 byte of root note (signed)
+8. 2 bytes of tempo (signed int)
+9. 1 byte number of instruments that are stored in file (unsigned)
+10. 1 byte number of patterns that are stored in file (unsigned)
+11. (number of instruments)*256 bytes
+12. (number of patterns)*(size of pattern)
+13. 64 bytes, repeating ":3", <!-- dont even ask why, im writing this at 2 am-->this is end of "project section"
+14. (start of this is data section=0) raw data, that will be pointed by for example instruments, like samples
 
 ## pattern
 1. 1 byte "is_locked" (bool)
