@@ -25,7 +25,8 @@ def sv():
         print("not saved, because EOF")
 
 def ahf(cr=None):
-    if cproj is not None and len(cproj.patterns) > 0: print(hd.hrf(cproj, a=av, current=cr))
+    if cproj is not None and len(cproj.patterns) > 0:
+        print(hd.hrf(cproj, a=av, current=cr))
 
 def exc(g: list):
     global fileloc
@@ -191,7 +192,7 @@ try:
         ahf(cr=[pi, i])
         cm = input("\n" + tx.ENAME + (cproj.name if cproj is not None else "") + ("*"*(not saved)) + "# ")
         cm = hd.cleanS(cm)
-        cm += "p"*(cm == "") # if cm is empty then set it to "+0", which means it wont change anything, but will triger am
+        cm += "p"*(cm == "") # if cm is empty then set it to "+0", which means it wont change anything, but will triger auto move
         try:
             match cm[0]:
                 case "p": # pass
@@ -201,26 +202,29 @@ try:
                 case "/":
                     exc(cm[1:].split(" "))
                 case "%":
-                    print("debug")
                     match cm[1:]:
                         case "hv":
                             av = not av
-                            print("av is now using:", av*"hrf"+(not av)*"values")
+                            print("av is now using:", "hrf" if av else "values")
                         case "am":
                             am = not am
-                            print("auto move is now", am*"enabled"+(not am)*"disabled")
-                case _:
+                            print("auto move is now", "enabled" if am else "disabled")
+                case _: # now these things which needs cproj to not be None
+                    vf = True
                     if cproj is not None:
+                        if cm[0] == "v":
+                            vf = False
+                            cm = cm[1:]
                         if cm.isdecimal():
-                            cproj.write(pi, i, int(cm))
+                            cproj.write(pi, i, pitch=int(cm)) if vf else cproj.write(pi, i, vol=int(cm))
                             saved = False
                             i += am
                         if cm[0] == "+":
-                            cproj.write(pi, i, cproj.read(pi, i).pitch + int(cm[1:]))
+                            cproj.write(pi, i, pitch=cproj.read(pi, i).pitch + int(cm[1:])) if vf else cproj.write(pi, i, vol=cproj.read(pi, i).vol + int(cm[1:]))
                             saved = False
                             i += am
                         if cm[0] == "-":
-                            cproj.write(pi, i, cproj.read(pi, i).pitch - int(cm[1:]))
+                            cproj.write(pi, i, pitch=cproj.read(pi, i).pitch - int(cm[1:])) if vf else cproj.write(pi, i, vol=cproj.read(pi, i).vol + int(cm[1:]))
                             saved = False
                             i += am
                         match cm:
@@ -245,8 +249,8 @@ try:
             print(tx.NPM)
         except IndexError:
             print(tx.IU)
-        except AttributeError:
-            print(tx.OD)
+#        except AttributeError:
+#            print(tx.OD)
         except KeyboardInterrupt: # because else instead quiting it would print "something went wrong..."
             raise KeyboardInterrupt
 #        except:
