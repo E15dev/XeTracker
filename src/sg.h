@@ -6,18 +6,16 @@
 #include <math.h>
 
 namespace waveforms {
+    double getCycles(double time, double freq) { return time/(44100.0/freq); } // time / times per cycle
+
     short Sine(double time, double freq, double amp) {
-        double tpc = 44100.0 / freq;
-        double cycles = time / tpc;
-        double rad = 6.283185307 * cycles;
+        double rad = 6.283185307 * getCycles(time, freq);
         short result = 32767 * amp * sin(rad);
         return result;
     }
 
     short Square(double time, double freq, double amp) {
-        double tpc = 44100.0 / freq;
-        double cycles = time / tpc;
-        double rad = 6.283185307 * cycles;
+        double rad = 6.283185307 * getCycles(time, freq);
         double d = ((sin(rad) > 0) * 2) - 1;
         short result = 32767 * amp * d;
         return result;
