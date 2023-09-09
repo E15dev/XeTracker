@@ -94,15 +94,16 @@ def ProjectVerify(d: bytes):
 def ProjectToClass(d: bytes, force=False):
     if not force: # if you use force, it skips all checks and try to convert in anyway
         ProjectVerify(d[:10])
-    ic = iToI(d[207], False, 1)
-    pc = iToI(d[208], False, 1)
-    proj = hd.TrProject(pc, d[10:138].decode()[:d[10:138].decode().index(sp)]) # name as sp terminated string, because sp was used for paddings
+    ic = iToI(d[209], False, 1)
+    pc = iToI(d[210], False, 1)
+    proj = hd.TrProject(pc, d[12:140].decode()[:d[12:140].decode().index(sp)]) # name as sp terminated string, because sp was used for paddings
+    proj.ecn = ECN # d[10:12].decode()
     proj.instruments = []
-    proj.author = d[138:202].decode()[:d[138:202].decode().index(sp)] # also sp terminated string
-    proj.time = int().from_bytes(d[202:204], bo, signed=False)
-    proj.rootnote = iToI(d[204], True, 1)
-    proj.tempo = int().from_bytes(d[205:207], bo, signed=True)
-    d = d[209:]
+    proj.author = d[140:204].decode()[:d[140:204].decode().index(sp)] # also sp terminated string
+    proj.time = int().from_bytes(d[204:206], bo, signed=False)
+    proj.rootnote = iToI(d[206], True, 1)
+    proj.tempo = int().from_bytes(d[207:209], bo, signed=True)
+    d = d[211:]
     for i in range(ic):
         proj.instruments.append(InstrumentToClass(d[:256]))
         d = d[256:]
@@ -115,6 +116,7 @@ def ProjectFromClass(c: hd.TrProject):
     f = bytes()
     f = eb.join([f, SIG.encode()])                                      # 8 bytes SIG
     f = eb.join([f, VERSION.to_bytes(2, bo, signed=False)])             # 2 bytes
+    f = eb.join([f, ECN.encode()])                                      # 2 bytes ECN
     f = eb.join([f, pr(c.name, 128, sp).encode()])                      # 128 bytes
     f = eb.join([f, pr(c.author, 64, sp).encode()])                     # 64 bytes
     f = eb.join([f, c.time.to_bytes(2, bo, signed=False)])              # 2 bytes
@@ -141,9 +143,10 @@ def readProj(path, force=False):
 bo = "big"                  # byteorder, change if needed, not sure what cpp will use
 sp = "\x00"                 # for paddings, should be "\x00", because it will also work as string terminator
 eb = bytes()                # empty bytes, im almost sure this is needed. used for concatenating bytes
-VERSION = 4                 # version of this file format, keep it same as in cf/xetrproj.h
+VERSION = 5                 # version of this file format, keep it same as in cf/xetrproj.h
 DEBUGCHR = "A"              # in .decode() will raise Error, char will be replaced with that instead crashing whole program
 SIG = "XeTrProj"            # dont change
+ECN = "PY"                  # should be PY because this encoder is made in py
 
 if __name__ == "__main__":
     # that was to test stuff
