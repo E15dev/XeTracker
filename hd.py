@@ -1,7 +1,7 @@
 # this file just have all config and definitions for editor and player
 
 MPL = 64                                                # changing this will break everything when loading old project
-HRFLW = 8                                               # TODO: THIS SHOULD DEPEND ON NUMBER OF PATTERNS IN PROJECT
+HRFLW = 4                                               # TODO: THIS SHOULD DEPEND ON NUMBER OF PATTERNS IN PROJECT
 
 leghrf = False                                          # TODO: ADD CHECK IF PRINT OUTPUT SUPPORT COLORS AND SET IT THEN
 color_reset, color_invert, color_index, color_first, color_current, color_locked, color_muted, color_command = "", "", "", "", "", "", "", ""
@@ -10,7 +10,7 @@ if not leghrf:
     color_invert = "\033[7m"                            # invert bacground and text color
     color_index = color_reset + "\033[36m"              # color of index
     color_first = color_invert + "\033[46m"             # color of first not in playrange
-    color_current = "\033[2;5m"                         # now its used!
+    color_current = "\033[2;5m"                         # now its used! NOT VISIBLE ON DUMB WINDOW TERMINAL WHEN IM USING WSL
     color_locked = "\033[41m"                           # when locked
     color_muted = "\033[41m\033[30m"                    # when pattern is muted
     color_command = "\033[46m"                          # highlight commands
@@ -79,6 +79,7 @@ class TrProject:
         self.author = ""
         self.tempo = tempo
         self.rootnote = 3       # its c, set to 0 for a
+        self.ecn = "PY" # encoder name, should be py because this is for python
         for i in range(pcount):
             self.patterns.append(TrPattern())
         for i in range(instc):
@@ -192,9 +193,9 @@ def hrf(pr: TrProject, a=True, h=True, current=None):
                     col = color_invert
                 if current is not None and pi == current[0] and i == current[1]:
                     col = col + color_current
-                g = g + col + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset))
+                g = g + col + padstr(str(hex(pt.read(i).vol))[2:] + color_reset, HRFLW+len(color_reset)) + col + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset)) # vol is from x00 to xFF, bug is in pitch because it can be ge negative TODO: MAKE HEX VALUES PAD WITH 0 AND THEN REST WITH SPACES
             g = g + "\n"
-    return "\r" + g + color_reset + "\n"
+    return "\r" + g + color_reset + "\n" # uuh should this be "\r" or did it mean "\n"
 
 def cleanS(s: str):
     try:
