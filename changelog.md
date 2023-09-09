@@ -37,3 +37,13 @@ now you can just use it. works only one channel at the time.
 9. `chrd` command and chords.py file
 10. `tx.NMP` - if you need more patterns to do that action
 
+# beta 2
+1. docs
+2. custom file format
+3. cf_visualize.py for debugin custom file format
+4. moved stuff to `src` dir
+
+# beta 3 (10.09.2023)
+1. renamed `cf.cpp` and `build_cf.sh` to `cfv.cpp` and `build_cfv.sh`
+2. remake of sg.h
+3. file format v5, added encoder name (2 bytes)
