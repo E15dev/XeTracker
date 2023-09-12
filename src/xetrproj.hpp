@@ -37,8 +37,8 @@ namespace cf {
         bool locked;    // i hope its 1 byte
         bool muted;
         uint8_t prlen;
-        uint8_t ofs;
-        int8_t profs;
+        uint8_t profs;
+        int8_t ofs;
         uint8_t iid;    // instrument id
         Note notes[64];
     };  // 134
@@ -54,9 +54,8 @@ namespace cf {
             uint16_t tempo;
             Project(std::vector<uint8_t> data) {
                 std::copy_n(std::begin(data), 8, std::begin(fsig));
-                if (!cmpsig(fsig)) { std::cerr << "PROJECT FAILED, FSIG IS WRONG, I HAVE NO IDEA HOW TO STOP WHOLE PROGRAM NOW" << std::endl; };
-                // TODO ALSO SAME THING WITH WRONG VER
-                if (!cmpver(((uint16_t)data[8] << 8) | data[9])) { std::cerr << "PROJECT FAILED, WRONG VERSION" << std::endl; };
+                if (!cmpsig(fsig)) { std::cerr << "PROJECT LOADING FAILED WRONG FSIG" << std::endl; exit(-2);};
+                if (!cmpver(((uint16_t)data[8] << 8) | data[9])) { std::cerr << "PROJECT FAILED, WRONG VERSION" << std::endl; exit(-3);};
                 std::copy_n(std::next(std::begin(data), 10), 2, std::begin(ecn));
                 std::copy_n(std::next(std::begin(data), 12), 128, std::begin(name));
                 std::copy_n(std::next(std::begin(data), 140), 64, std::begin(author));
@@ -103,6 +102,15 @@ namespace cf {
             void setPattern(uint8_t i, Pattern patrn) { patterns[i] = patrn; }
             Pattern getPattern(uint8_t i) { return patterns[i]; }
 
+        Note playerRead(uint8_t pi, int i) {
+            Pattern cp = getPattern(pi);
+            Note tmp = cp.notes[(cp.profs + ((i+cp.ofs)%cp.prlen)) % MPL];
+            Note n;
+            n.volume = tmp.volume;
+            n.pitch = rootnote + tmp.pitch;
+            return n;
+        }
+
         private:
             uint8_t fsig[8];
             uint16_t fver;
@@ -114,9 +122,7 @@ namespace cf {
             uint8_t fend[64];
 
             bool cmpsig(uint8_t csig[8]) {
-                for(int i = 0; i<8; i++) {
-                    if (csig[i] != SIG[i]) {return false;};
-                };
+                for(int i = 0; i<8; i++) { if (csig[i] != SIG[i]) {return false;}; };
                 return true;
             };
 
