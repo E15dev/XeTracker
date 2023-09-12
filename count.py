@@ -18,11 +18,13 @@ fn = [
 "src/build_cfv.sh",
 "src/cfv.cpp",
 "src/cf_visualize.py",
-"src/xetrproj.h",
+"src/xetrproj.hpp",
+"src/p2f.hpp",
 "changelog.md",
 "docs/files.md",
 "docs/soundgen input format.md",
-"docs/xetrproj file.md"
+"docs/xetrproj file.md",
+"docs/xetrproj.hpp exit codes.md"
 ]
 
 
