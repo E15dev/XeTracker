@@ -111,6 +111,8 @@ namespace cf {
             return n;
         }
 
+        uint8_t getPatternCount() {return patc;} // idk
+
         private:
             uint8_t fsig[8];
             uint16_t fver;
@@ -136,4 +138,3 @@ namespace cf {
 }
 
 #endif
-

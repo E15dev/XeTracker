@@ -26,9 +26,10 @@ int main(int argc, char *argv[0]) {
     int i = 0;
     while (1) {
         while (getTime()-tn < i*(60.0/cproj.tempo)) {}
-        cf::Note cnote = cproj.playerRead(0, i);
-        // TODO: DO FOR ALL PATTERNS NOT ONLY FIRST
-        printf("%d %f 0 0", cnote.volume, p2f::convert(cnote.pitch));
+        for (uint8_t j = 0; j<cproj.getPatternCount(); j++) {
+            cf::Note cnote = cproj.playerRead(j, i);
+            printf("%d %f 0 0 ", cnote.volume, p2f::convert(cnote.pitch));
+        }
         printf("\n"); fflush(stdout);
         i = i + 1;
     }
