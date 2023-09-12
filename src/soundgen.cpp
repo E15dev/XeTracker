@@ -26,7 +26,7 @@ int main() {
         while (iss >> tmpv) { vals.push_back(tmpv); }
         for (int j = 0; j < vals.size()/4; j++) {
             if (vals[j*4] != 0.0) { // ignore if volume is 0
-                for (int i = 0; i < 44100; i++) { samples[i] += waveforms::Sine(i, vals[(j*4)+1], amp*vals[j*4]); }
+                for (int i = 0; i < 44100; i++) { samples[i] += waveforms::Sine(i, vals[(j*4)+1], amp*vals[j*4]/255); }
             }
         }
 
