@@ -13,4 +13,4 @@ def random(count, name):
     return d
 
 def instrumentSine():
-    return hd.instrument(0x57, b'x00')
+    return hd.TrInstrument(0x57, b'') # 0x57 and rest 0 for sine

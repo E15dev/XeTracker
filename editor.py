@@ -175,6 +175,12 @@ def exc(g: list):
             for s in g: # beause args are space separated, it need to connect them back to have spaces
                 tmp = tmp + " " + s
             cproj.name = s
+        case "sine": # set instrument of selected pattern to sine
+            cproj.instruments.append(gen.instrumentSine())
+            cproj.patterns[pi].instrument = len(cproj.instruments)-1
+            saved = False
+            print(cproj.instruments)
+
 
 print(f"{hd.color_reset}\nwelcome to XeTracker!\nuse {hd.color_command}/help{hd.color_reset} for help\n")
 
