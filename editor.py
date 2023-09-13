@@ -229,10 +229,6 @@ try:
                             cproj.write(pi, i, pitch=cproj.read(pi, i).pitch + int(cm[1:])) if vf else cproj.write(pi, i, vol=cproj.read(pi, i).vol + int(cm[1:]))
                             saved = False
                             i += am
-                        if cm[0] == "-":
-                            cproj.write(pi, i, pitch=cproj.read(pi, i).pitch - int(cm[1:])) if vf else cproj.write(pi, i, vol=cproj.read(pi, i).vol + int(cm[1:]))
-                            saved = False
-                            i += am
                         match cm:
                             case "l": # move to left
                                 pi = (pi-1)%len(cproj.patterns)
