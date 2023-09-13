@@ -55,6 +55,7 @@ def exc(g: list):
             sv()
             fileloc = g[0] + ".xetrproj"
             cproj = gen.empty(4, g[0])
+            cproj.instruments[0] = gen.instrumentSine() # default to sine instead nothing
        	    saved = False
         case "random":
             sv()
@@ -161,13 +162,7 @@ def exc(g: list):
                 cproj.write((pi + ni) % len(cproj.patterns), i, chr[ni] + n)
             saved = False
         # NOT READY FUNCTIONS, DEV ONLY
-        case "ldt":                             # load patterns from file to cproj
-            sv()
-            try:
-                cproj.patterns = readProj(g[0]).patterns
-                saved = False
-            except IndexError:
-                print("index err")
+        # TODO: "LDT", COPY PATTERNS FROM FILE TO CURRENT PROJ
         case "time":
             print(cproj.time + round(time()-timeS))
         case "name":
@@ -175,12 +170,7 @@ def exc(g: list):
             for s in g: # beause args are space separated, it need to connect them back to have spaces
                 tmp = tmp + " " + s
             cproj.name = s
-        case "sine": # set instrument of selected pattern to sine
-            cproj.instruments.append(gen.instrumentSine())
-            cproj.patterns[pi].instrument = len(cproj.instruments)-1
-            saved = False
-            print(cproj.instruments)
-
+        # TODO: INSTRUMENT SET, with types "P", "W" and args for these
 
 print(f"{hd.color_reset}\nwelcome to XeTracker!\nuse {hd.color_command}/help{hd.color_reset} for help\n")
 
@@ -196,7 +186,7 @@ timeS = time()
 try:
     while True:
         ahf(cr=[pi, i])
-        cm = input("\n" + tx.ENAME + (cproj.name if cproj is not None else "") + ("*"*(not saved)) + "# ")
+        cm = input("\n" + tx.ENAME + (cproj.name if cproj is not None else "") + (" " if saved else "*") + "# ")
         cm = hd.cleanS(cm)
         cm += "p"*(cm == "") # if cm is empty then set it to "+0", which means it wont change anything, but will triger auto move
         try:
@@ -251,8 +241,6 @@ try:
             print(tx.NPM)
         except IndexError:
             print(tx.IU)
-#        except AttributeError:
-#            print(tx.OD)
         except KeyboardInterrupt: # because else instead quiting it would print "something went wrong..."
             raise KeyboardInterrupt
 #        except:
