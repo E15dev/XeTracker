@@ -173,7 +173,8 @@ def hrf(pr: TrProject, a=True, h=True, current=None):
     if h:   # HEADER
         g = g + padstr("", HRFLW) + " "
         for i in range(len(pr.patterns)):
-            g = g + color_index + padstr(str(hex(i))[2:] + color_reset, HRFLW+len(color_reset))
+            hcol = color_muted if (pr.patterns[i].muted) else color_index
+            g = g + hcol + padstr(str(hex(i))[2:] + color_reset, (2*HRFLW)+len(color_reset))
         g = g + "\n"
     for i in range(MPL):
         if a or pr.isInPRAll(i):
@@ -181,15 +182,15 @@ def hrf(pr: TrProject, a=True, h=True, current=None):
             for pi in range(len(pr.patterns)):
                 pt = pr.patterns[pi]
                 col = ""
-                if pt.muted:                      # muted pattern
-                    col = color_muted
-                elif i == pt.fPVI():                # first play range note (first played by player i mean)
-                    col = color_first
-                elif pt.locked and pt.isInPR(i):    # play range of locked pattern
+                if i == pt.fPVI() and pt.locked:   # first play range note in locked
+                    col = color_first + color_locked
+                elif pt.locked and pt.isInPR(i):                # play range of locked pattern
                     col = color_invert + color_locked
-                elif pt.locked:                     # locked pattern
+                elif pt.locked:                                   # locked pattern
                     col = color_locked
-                elif pt.isInPR(i):                  # play ranges
+                elif i == pt.fPVI():                            # first play range note
+                    col = color_first
+                elif pt.isInPR(i):                              # play ranges
                     col = color_invert
                 if current is not None and pi == current[0] and i == current[1]:
                     col = col + color_current
