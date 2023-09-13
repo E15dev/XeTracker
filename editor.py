@@ -221,7 +221,7 @@ try:
                         if cm[0] == "v":
                             vf = False
                             cm = cm[1:]
-                        if cm.isdecimal():
+                        if (cm.isnumeric()) or (len(cm) > 1 and cm[0] == "-" and cm[1:].isnumeric()):
                             cproj.write(pi, i, pitch=int(cm)) if vf else cproj.write(pi, i, vol=int(cm))
                             saved = False
                             i += am
