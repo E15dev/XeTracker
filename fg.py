@@ -11,3 +11,6 @@ def random(count, name):
         for j in range(64):
             d.write(i, j, floor(random()*12))
     return d
+
+def instrumentSine():
+    return hd.instrument(0x57, b'x00')
