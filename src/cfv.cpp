@@ -7,6 +7,9 @@
 #include "xetrproj.hpp"
 #include "p2f.hpp"
 
+#include <SFML/Audio.hpp>
+#include "sg.h"
+
 void phex(uint8_t b) { printf("%02x ", b); }
 
 double getTime() {return std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();}
@@ -22,15 +25,27 @@ int main(int argc, char *argv[0]) {
 
     cf::Project cproj = cf::Project(data); // project from bytes
 
+    float amp = 0.1;    // CHANGE IT LATER BUT ITS PAINFUL ON MAX VOL
+    sf::SoundBuffer sb;
+    std::vector<sf::Int16> samples;
+    sf::Sound sp;
+    sp.setLoop(true);
+
     double tn = getTime();
     int i = 0;
     while (1) {
+        samples.clear();
+        for (int i = 0; i < 44100; i++) { samples.push_back(0);} // make "samples" 44100 long (probably there is better way, but i have no internet to check)
+
         while (getTime()-tn < i*(60.0/cproj.tempo)) {}
         for (uint8_t j = 0; j<cproj.getPatternCount(); j++) {
             cf::Note cnote = cproj.playerRead(j, i);
-            printf("%d %f 0 0 ", cnote.volume, p2f::convert(cnote.pitch));
+            for (int i = 0; i < 44100; i++) { samples[i] += waveforms::Sine(i, p2f::convert(cnote.pitch), amp*cnote.volume/255); };
         }
-        printf("\n"); fflush(stdout);
+        sb.loadFromSamples(&samples[0], samples.size(), 2, 44100);
+        sp.setBuffer(sb);
+        sp.play();
+
         i = i + 1;
     }
 
