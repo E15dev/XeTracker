@@ -4,7 +4,7 @@ probably only tracker software made to work in tty mode</br>
 
 # setup
 execute this command to build and set permissions for all things ~~, would be easier if i knew how to use makefiles~~
-`echo -e "setting up!\n"; chmod +x editor.py p2f.py player.py clean.sh count.py src/rand.py cf.py src/build_cfv.sh src/cf_visualize.py; cd src; ./build_cfv.sh; cd ..`
+`echo -e "setting up!\n"; chmod +x editor.py p2f.py player.py clean.sh count.py src/rand.py cf.py src/build_player.sh src/cf_visualize.py; cd src; ./build_player.sh; cd ..`
 
 # usage
 ## move cursor
