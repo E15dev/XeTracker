@@ -193,7 +193,8 @@ def hrf(pr: TrProject, a=True, h=True, current=None):
                     col = color_invert
                 if current is not None and pi == current[0] and i == current[1]:
                     col = col + color_current
-                g = g + col + padstr(str(hex(pt.read(i).vol))[2:] + color_reset, HRFLW+len(color_reset)) + col + padstr(str(hex(pt.read(i).pitch))[2:] + color_reset, HRFLW+len(color_reset)) # vol is from x00 to xFF, bug is in pitch because it can be ge negative TODO: MAKE HEX VALUES PAD WITH 0 AND THEN REST WITH SPACES
+                ptmp = padstr((str(hex(pt.read(i).pitch))[2:] if pt.read(i).pitch>-1 else "-"+str(hex(pt.read(i).pitch))[3:]) + color_reset, HRFLW+len(color_reset))
+                g = g + col + padstr(str(hex(pt.read(i).vol))[2:] + color_reset, HRFLW+len(color_reset)) + col + ptmp # TODO: MAKE HEX VALUES PAD WITH 0 AND THEN REST WITH SPACES
             g = g + "\n"
     return "\r" + g + color_reset + "\n" # uuh should this be "\r" or did it mean "\n"
 
