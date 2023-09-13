@@ -9,13 +9,10 @@
 `player.py` - reads data from xetrp files with right tempo, and convert it to format that soundgen will understand<br>
 `chords` - have chords utils<br>
 `readme.md` - this file, you should know this<br>
-`src/build_sg.sh` - to build soundgen<br>
 `src/sg.h` - things for soundgen, like waveforms<br>
-`src/soundgen.cpp` - sound generator<br>
-`src/rand.py` - generate n of random freq between 220 and 880 hz to test soundgen<br>
 `cf.py` - have functions to decode and encode classes from hd, all stuff releated to custom file format<br>
-`src/build_cf.sh` - build cf.cpp<br>
+`src/build_player.sh` - build player.cpp<br>
 `src/cf_visualize.py` - prints project as hex, but also colors different sections of it. used to debug .xetrproj files<br>
-`src/cfv.cpp` - should do same thing but in c++, its for testing xetrproj.h<br>
+`src/player.cpp` - should do same thing but in c++, its for testing xetrproj.h<br>
 `src/xetrproj.hpp` - have all functions and things needed to decode .xetrproj files<br>
 `src/p2f.hpp` - pitch to frequency but in c++ instead python<br>
