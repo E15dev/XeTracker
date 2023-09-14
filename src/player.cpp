@@ -4,13 +4,12 @@
 #include <vector>
 #include <algorithm>
 #include <chrono>
+
 #include "xetrproj.hpp"
-#include "p2f.hpp"
 
 #include <SFML/Audio.hpp>
 #include "sg.h"
-
-void phex(uint8_t b) { printf("%02x ", b); }
+#include "p2f.hpp"
 
 double getTime() {return std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();}
 
@@ -37,11 +36,11 @@ int main(int argc, char *argv[0]) {
         samples.clear();
         for (int i = 0; i < 44100; i++) { samples.push_back(0);} // make "samples" 44100 long (probably there is better way, but i have no internet to check)
 
-        while (getTime()-tn < i*(60.0/cproj.tempo)) {}
         for (uint8_t j = 0; j<cproj.getPatternCount(); j++) {
             cf::Note cnote = cproj.playerRead(j, i);
-            if (!cproj.getPattern(j).muted) {
-            for (int i = 0; i < 44100; i++) { samples[i] += waveforms::fromInstrument( i, p2f::convert(cnote.pitch), amp*cnote.volume/255, cproj.getInstrument(cproj.getPattern(j).iid)); };};};
+            if (!cproj.getPattern(j).muted) { for (int i = 0; i < 44100; i++) { samples[i] += waveforms::fromInstrument( i, p2f::convert(cnote.pitch), amp*cnote.volume/255, cproj.getInstrument(cproj.getPattern(j).iid));};};}; // ignore muted notes
+
+        while (getTime()-tn < i*(60.0/cproj.tempo)) {} // waiting for for next note until before changing sample again
         sb.loadFromSamples(&samples[0], samples.size(), 2, 44100);
         sp.setBuffer(sb);
         sp.play();
