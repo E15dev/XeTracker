@@ -36,6 +36,7 @@ if type==0x50 (thats "P"), data will be ignored, and everything using this instr
 if type==0x53 (thats "S"), data will be null terminated, null padded path to sample on disc, may start with $samples which will be converted to sample folder set by user</br>
 if type==0x56 (thats "V"), I HAVE NO IDEA HOW TO IMPLEMENT IT</br>
 if type==0x57 (thats "W"), first byte of data is id of wavetable, second, third, and fourth are modulators, wavetables will be stored in soundgen</br>
+if type==0x77 (thats "w"), new wavetable, stored in instrument fully</br>
 if type==0x73 (thats "s"), first 8 bytes are ofset from "data section" start. next 4 bytes are int, indicating length of sample.</br>
 
 ### wavetables

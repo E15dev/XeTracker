@@ -55,7 +55,7 @@ def exc(g: list):
             sv()
             fileloc = g[0] + ".xetrproj"
             cproj = gen.empty(4, g[0])
-            cproj.instruments[0] = gen.instrumentSine() # default to sine instead nothing
+            cproj.instruments[0] = gen.instrumentTriangle()
        	    saved = False
         case "random":
             sv()

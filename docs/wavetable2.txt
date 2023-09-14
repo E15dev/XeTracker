@@ -1,0 +1,4 @@
+255 bytes: 
+    1 byte interpolation
+    127 waveform
+    127 waveform
