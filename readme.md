@@ -15,9 +15,10 @@ execute this command to build and set permissions for all things<br>
 
 ## prefixes
 None - set value in place where you are<br>
-`+` - add to value in place where you are<br>
+`+` - add to value in place where you are (you can do +- to subtract)<br>
 `/` - execute command<br>
 `%` - set config<br>
+`v` - change volume of note, for example `v0` set volume to 0<br>
 
 ## other one character inputs
 `p` - do nothing, idk why its even here<br>
