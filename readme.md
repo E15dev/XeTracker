@@ -27,7 +27,7 @@ None - set value in place where you are<br>
 
 # config
 `hv` - set it to display all patterns in project or only ranges of patterns that will be played by player<br>
-`am` - if its enabled, cursor will move after every change of value (after every input with no prefix or with `+` or `-` prefix)<br>
+`am` - if its enabled, cursor will move after every change of value (after every input with no prefix or with `+` prefix)<br>
 
 # other
 list commands by executing `/help` in editor<br>
