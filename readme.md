@@ -3,8 +3,7 @@ this is XeTracker project<br>
 probably only tracker software made to work in tty mode<br>
 
 # setup
-execute this command to build and set permissions for all things<br>
-`echo -e "setting up!\n"; chmod +x editor.py clean.sh count.py cf.py src/build_player.sh src/cf_visualize.py; cd src; ./build_player.sh; cd ..`
+all permissions should be set up already, to build player, first cd in to src and then use `./build_player.sh`<br>
 
 # usage
 ## move cursor
