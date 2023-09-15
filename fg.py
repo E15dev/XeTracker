@@ -15,12 +15,14 @@ def random(count, name):
 def instrumentTriangle():
     eb, wave, full = bytes(), bytes(), bytes()
 
-    for i in range(32): # 127 to 255
-        wave = eb.join([wave, int(127 + i*4).to_bytes(1, "big", signed=False)])
-    for i in range(64): # 255 to 0
-        wave = eb.join([wave, int(255-(i*4)).to_bytes(1, "big", signed=False)])
-    for i in range(31): # 0 to 127
-        wave = eb.join([wave, int(i*4).to_bytes(1, "big", signed=False)])
+    for i in range(32): # o to -1
+        wave = eb.join([wave, int(256 - (i+1)*4).to_bytes(1, "big", signed=False)])
+    for i in range(32): # -1 to 0
+        wave = eb.join([wave, int(127 + (i+1)*4).to_bytes(1, "big", signed=False)])
+    for i in range(32): # 0 to 1
+        wave = eb.join([wave, int(((i+1)*4)-1).to_bytes(1, "big", signed=False)])
+    for i in range(31): # o to -1
+        wave = eb.join([wave, int(128 - (i+1)*4).to_bytes(1, "big", signed=False)])
 
     full = eb.join([full, b'\xff']) # full interpolation
     full = eb.join([full, wave])    # waveform 0
