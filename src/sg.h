@@ -8,7 +8,7 @@
 namespace waveforms {
     short _WTData(double time, double freq, uint8_t data[255]) {
         double tpc = 44100.0/freq;
-        return 256*static_cast<int8_t>(data[1+static_cast<int8_t>(floor(fmod(time/tpc, 1)*126))]); // 126 because its from 0 to 127
+        return 256*static_cast<int8_t>(data[1+static_cast<int8_t>(floor(fmod(time/tpc, 1)*126))]); // 126 because single frame in wavetable is 127 bytes
     }
 
     // WIP of generator from instrument

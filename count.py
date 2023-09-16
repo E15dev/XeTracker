@@ -14,6 +14,7 @@ fn = [
 "src/cf_visualize.py",
 "src/xetrproj.hpp",
 "src/p2f.hpp",
+"src/sg.h",
 "changelog.md",
 "docs/files.md",
 "docs/xetrproj file.md",

@@ -24,6 +24,8 @@ int main(int argc, char *argv[0]) {
 
     cf::Project cproj = cf::Project(data); // project from bytes
 
+    printf("player started\n");
+
     float amp = 0.1;    // CHANGE IT LATER BUT ITS PAINFUL ON MAX VOL
     sf::SoundBuffer sb;
     std::vector<sf::Int16> samples;
