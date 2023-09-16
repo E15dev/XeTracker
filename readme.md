@@ -1,6 +1,6 @@
 # welcome
 this is XeTracker project<br>
-probably only tracker software made to work in tty mode<br>
+probably only tracker software made to work in linux tty mode<br>
 
 # setup
 all permissions should be set up already, to build player, first cd in to src and then use `./build_player.sh`<br>
@@ -30,9 +30,7 @@ None - set value in place where you are<br>
 
 # other
 list commands by executing `/help` in editor<br>
-if you test dev commands (that arent listed in tx.cmds) you need to put "." before command<br>
+if you test dev commands (that arent listed in tx.cmds) you need to put "." before command name<br>
 
 # playing
-to play you need player and soundgen: `./player.py [your projectname].xetrp | src/soundgen`<br>
-player is to read data from project file and output as text<br>
-soundgen is to get from this text info like volume and frequency, and convert it to real sound<br>
+to play project you made you just need to use player from src, `src/player [projectname].xetrproj`<br>
