@@ -1,7 +1,7 @@
 # this file just have all config and definitions for editor and player
 
 MPL = 64                                                # changing this will break everything when loading old project
-HRFLW = 4                                               # TODO: THIS SHOULD DEPEND ON NUMBER OF PATTERNS IN PROJECT
+HRFLW = 6                                               # TODO: THIS SHOULD DEPEND ON NUMBER OF PATTERNS IN PROJECT
 
 leghrf = False                                          # TODO: ADD CHECK IF PRINT OUTPUT SUPPORT COLORS AND SET IT THEN
 color_reset, color_invert, color_index, color_first, color_current, color_locked, color_muted, color_command = "", "", "", "", "", "", "", ""
@@ -55,8 +55,16 @@ class TrPattern:
         if self.locked:
             raise locked
         if pitch is not None:
+            if pitch > 127:
+                pitch = 127
+            if pitch < -128:
+                pitch = -128
             self.notes[i].pitch = pitch
         if vol is not None:
+            if vol > 255:
+                vol = 255
+            if vol < 0:
+                vol = 0
             self.notes[i].vol = vol
 
     def isInPR(self, i):
@@ -197,8 +205,8 @@ def hrf(pr: TrProject, a=True, h=True, current=None):
                     col = col + color_current
                 if pt.read(i).vol == 0:
                     col = col + color_dec
-                ptmp = padstr((str(hex(pt.read(i).pitch))[2:] if pt.read(i).pitch>-1 else "-"+str(hex(pt.read(i).pitch))[3:]) + color_reset, HRFLW+len(color_reset))
-                g = g + col + padstr(str(hex(pt.read(i).vol))[2:] + color_reset, HRFLW+len(color_reset)) + col + ptmp # TODO: MAKE HEX VALUES PAD WITH 0 AND THEN REST WITH SPACES
+                ptmp = padstr("{0:#0{1}x}".format(pt.read(i).pitch, 4) + color_reset, HRFLW+len(color_reset))
+                g = g + col + padstr("{0:#0{1}x}".format(pt.read(i).vol, 4) + color_reset, HRFLW+len(color_reset)) + col + ptmp # TODO: MAKE HEX VALUES PAD WITH 0 AND THEN REST WITH SPACES
             g = g + "\n"
     return "\r" + g + color_reset + "\n" # uuh should this be "\r" or did it mean "\n"
 
