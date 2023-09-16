@@ -10,10 +10,11 @@ if not leghrf:
     color_invert = "\033[7m"                            # invert bacground and text color
     color_index = color_reset + "\033[36m"              # color of index
     color_first = color_invert + "\033[46m"             # color of first not in playrange
-    color_current = "\033[2;5m"                         # now its used! NOT VISIBLE ON DUMB WINDOW TERMINAL WHEN IM USING WSL
+    color_current = "\033[21m"                          # added to note on which cursor is
     color_locked = "\033[41m"                           # when locked
     color_muted = "\033[41m\033[30m"                    # when pattern is muted
     color_command = "\033[46m"                          # highlight commands
+    color_dec = "\033[8m"
 
 # ----EXCEPTIONS----
 class locked(Exception):
@@ -182,18 +183,20 @@ def hrf(pr: TrProject, a=True, h=True, current=None):
             for pi in range(len(pr.patterns)):
                 pt = pr.patterns[pi]
                 col = ""
-                if i == pt.fPVI() and pt.locked:   # first play range note in locked
+                if i == pt.fPVI() and pt.locked:                # first play range note in locked pattern
                     col = color_first + color_locked
                 elif pt.locked and pt.isInPR(i):                # play range of locked pattern
                     col = color_invert + color_locked
-                elif pt.locked:                                   # locked pattern
+                elif pt.locked:                                 # locked pattern
                     col = color_locked
                 elif i == pt.fPVI():                            # first play range note
                     col = color_first
-                elif pt.isInPR(i):                              # play ranges
+                elif pt.isInPR(i):                              # play range
                     col = color_invert
                 if current is not None and pi == current[0] and i == current[1]:
                     col = col + color_current
+                if pt.read(i).vol == 0:
+                    col = col + color_dec
                 ptmp = padstr((str(hex(pt.read(i).pitch))[2:] if pt.read(i).pitch>-1 else "-"+str(hex(pt.read(i).pitch))[3:]) + color_reset, HRFLW+len(color_reset))
                 g = g + col + padstr(str(hex(pt.read(i).vol))[2:] + color_reset, HRFLW+len(color_reset)) + col + ptmp # TODO: MAKE HEX VALUES PAD WITH 0 AND THEN REST WITH SPACES
             g = g + "\n"
