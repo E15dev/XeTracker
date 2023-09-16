@@ -45,5 +45,12 @@ now you can just use it. works only one channel at the time.
 
 # beta 3 (10.09.2023)
 1. renamed `cf.cpp` and `build_cf.sh` to `cfv.cpp` and `build_cfv.sh`
-2. remake of sg.h
+2. rewrite of sg.h
 3. file format v5, added encoder name (2 bytes)
+
+# beta 4 (16.09.2023)
+1. project class in xetrproj.hpp
+2. support of wavetable instrument in sg.h
+3. note volume support in editor<!--m,aybe it was already in beta 3, im not sure-->
+4. player is now in c++ only
+5. dir `/old` for programs that wont be needed anymore
