@@ -10,11 +10,11 @@ if not leghrf:
     color_invert = "\033[7m"                            # invert bacground and text color
     color_index = color_reset + "\033[36m"              # color of index
     color_first = color_invert + "\033[46m"             # color of first not in playrange
-    color_current = "\033[21m"                          # added to note on which cursor is
+    color_current = "\033[5m"                           # added to note on which cursor is
     color_locked = "\033[41m"                           # when locked
     color_muted = "\033[41m\033[30m"                    # when pattern is muted
     color_command = "\033[46m"                          # highlight commands
-    color_dec = "\033[8m"
+    color_dec = "\033[9m"
 
 # ----EXCEPTIONS----
 class locked(Exception):
