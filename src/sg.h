@@ -12,6 +12,12 @@ namespace waveforms {
         return 256*static_cast<int8_t>(data[1+static_cast<int8_t>(floor(fmod(time/getSpc(freq), 1)*126))]); // 126 because single frame in wavetable is 127 bytes
     }
 
+    short Sine(double time, double freq, double amp) {
+        double rad = 6.283185307 * time/(44100.0/freq);
+        short result = 32767 * amp * sin(rad);
+        return result;
+    }
+
     // WIP of generator from instrument
     short fromInstrument(double time, double freq, double amp, cf::Instrument instr) {
         short out;

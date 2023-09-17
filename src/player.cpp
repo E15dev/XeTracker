@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <iterator>
 #include <vector>
 #include <algorithm>
@@ -14,8 +15,38 @@
 double getTime() {return std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();}
 
 int main(int argc, char *argv[0]) {
+    float amp = 0.1;    // CHANGE IT LATER BUT ITS PAINFUL ON MAX VOL
+
+    sf::SoundBuffer sb;
+    std::vector<sf::Int16> samples;
+    sf::Sound sp;
+    sp.setLoop(true);
+
     if (argc<2) {
-        printf("you need to specify filename\n"); // TODO: if not args, play in old mode (reading from stdin)
+        std::string inp;
+        std::vector<float> vals;
+        float tmpv;
+
+        while (1) {
+            samples.clear();
+            for (int i = 0; i < 44100; i++) { samples.push_back(0);} // make "samples" 44100 long (probably there is better way, but i have no internet to check)
+            getline(std::cin, inp);
+            std::istringstream iss(inp);
+
+            vals.clear();
+            while (iss >> tmpv) { vals.push_back(tmpv); }
+            for (int j = 0; j < vals.size()/4; j++) {
+                if (vals[j*4] != 0.0) { // ignore if volume is 0
+                    for (int i = 0; i < 44100; i++) {
+                        samples[i] += waveforms::Sine(i, vals[(j*4)+1], amp*vals[j*4]/255);
+                    }
+                }
+            }
+
+            sb.loadFromSamples(&samples[0], samples.size(), 2, 44100);
+            sp.setBuffer(sb);
+            sp.play();
+        }
     } else {
         std::ifstream file(argv[1], std::ios::in | std::ios::binary);
         if (!file.is_open()) {return 1;};
@@ -26,12 +57,6 @@ int main(int argc, char *argv[0]) {
         cf::Project cproj = cf::Project(data); // project from bytes
 
         printf("player started\n");
-
-        float amp = 0.1;    // CHANGE IT LATER BUT ITS PAINFUL ON MAX VOL
-        sf::SoundBuffer sb;
-        std::vector<sf::Int16> samples;
-        sf::Sound sp;
-        sp.setLoop(true);
 
         double tn = getTime();
         int i = 0;
