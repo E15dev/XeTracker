@@ -9,7 +9,7 @@ fn = [
 "readme.md",
 "chords.py",
 "cf.py",
-"src/build_player.sh",
+"src/build.sh",
 "src/player.cpp",
 "src/cf_visualize.py",
 "src/xetrproj.hpp",
