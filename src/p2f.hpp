@@ -4,7 +4,7 @@
 #define P2F_H
 
 namespace p2f {
-    float bfqs[12] = {
+    const float bfqs[12] = {
     440.00,     // a
     466.16,     // a#
     493.88,     // b
@@ -18,11 +18,7 @@ namespace p2f {
     783.99,     // g
     830.61};    // g#
 
-    float convert(int p) {
-        int oct = std::floor(p / 12.0);
-        int mp = (12 + (p % 12)) % 12;
-        return bfqs[mp]*std::pow(2, oct);
-    }
+    float convert(int);
 }
 
 #endif

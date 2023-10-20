@@ -10,7 +10,7 @@ namespace waveforms {
     short WTData(double, double, uint8_t[255]);
 
     short Sine(double, double, double);
-    short fromInstrument(double time, double freq, double amp, cf::Instrument instr);
+    short fromInstrument(double, double, double, cf::Instrument);
 }
 
 #endif
