@@ -3,6 +3,7 @@ this is XeTracker project<br>
 probably only tracker software made to work in linux tty mode<br>
 
 # setup
+you need to install sfml library<br>
 all permissions should be set up already, to build player, first cd in to src and then use `./build_player.sh`<br>
 
 # usage
@@ -30,7 +31,7 @@ None - set value in place where you are<br>
 
 # other
 list commands by executing `/help` in editor<br>
-if you test dev commands (that arent listed in tx.cmds) you need to put "." before command name<br>
+if you test dev commands (that aren't listed in tx.cmds) you need to put "." before command name<br>
 
 # playing
 to play project you made you just need to use player from src, `src/player [projectname].xetrproj`<br>
